@@ -2,7 +2,7 @@ package script
 
 import (
 	"bytes"
-	"fmt"
+	"html/template"
 	"io"
 	"os"
 
@@ -10,10 +10,41 @@ import (
 )
 
 type ScriptProps struct {
+	Bubble
+	Cta
 }
 
+type Bubble struct {
+	Enabled bool
+	TextContent string
+}
+
+type Cta struct {
+	Enabled bool
+	TextContent string
+}
 
 func process(props ScriptProps) (interface{}, error) {
+
+	t, err := template.ParseFiles(
+		"../template/script/bubble.js.tmpl",
+		"../template/script/cta.js.tmpl",
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+
+	err = t.ExecuteTemplate(&buf, "bubble", props.Bubble)
+	if err != nil {
+		return nil, err
+	}
+
+	err = t.ExecuteTemplate(&buf, "cta", props.Cta)
+	if err != nil {
+		return nil, err
+	}
 
 	file, err := os.Open("../template/script/base.js")
 	if err != nil {
@@ -27,6 +58,7 @@ func process(props ScriptProps) (interface{}, error) {
 	}
 
 	var result bytes.Buffer
+	result.Write(buf.Bytes())
 	result.Write(base)
 
 	m := minify.Default
@@ -34,8 +66,6 @@ func process(props ScriptProps) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(out)
 
 	return out, nil
 }
