@@ -4,6 +4,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/crocoder-dev/intro-video/internal/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -36,6 +37,10 @@ func main() {
 		}
 		return c.String(200, resolution)
 	})
+
+	e.GET("/script.js", handler.Script)
+
+	e.GET("/style.css", handler.Stylesheet)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

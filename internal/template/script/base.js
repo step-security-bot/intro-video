@@ -1,8 +1,13 @@
 /**
-* @param {string} videoUrl
 * @returns {void}
 */
-export default function run(videoUrl) {
+function run() {
+
+  if (!videoUrl) {
+    console.error('No video URL provided');
+    return;
+  }
+
   preload(videoUrl);
 
   const initialScrollPosition = window.scrollY;
@@ -61,12 +66,12 @@ function setupIntroVideo() {
   card.classList.add('iv-card');
 
   let bubble = null;
-  if (configBubble && configBubble.enabled) {
+  if (bubbleConfig && bubbleConfig.enabled) {
     bubble = createBubble();
   }
 
   let cta = null;
-  if (configCta && configCta.enabled) {
+  if (ctaConfig && ctaConfig.enabled) {
     cta = createCta();
   }
 

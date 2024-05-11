@@ -30,43 +30,43 @@ type Cta struct {
 
 
 
-func process(props StylesheetProps) (interface{}, error) {
+func Process(props StylesheetProps) (string, error) {
 
 	t, err := template.ParseFiles(
-		"../template/stylesheet/bubble.css.tmpl",
-		"../template/stylesheet/cta.css.tmpl",
-		"../template/stylesheet/dimension.css.tmpl",
+		"internal/template/stylesheet/bubble.css.tmpl",
+		"internal/template/stylesheet/cta.css.tmpl",
+		"internal/template/stylesheet/dimension.css.tmpl",
 	)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	var buf bytes.Buffer
 
 	err = t.ExecuteTemplate(&buf, "bubble", props.Bubble)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	err = t.ExecuteTemplate(&buf, "cta", props.Cta)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	err = t.ExecuteTemplate(&buf, "dimension", props.Dimensions)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	file, err := os.Open("../template/stylesheet/base.css")
+	file, err := os.Open("internal/template/stylesheet/base.css")
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer file.Close()
 
 	base, err := io.ReadAll(file)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	var result bytes.Buffer
@@ -76,7 +76,7 @@ func process(props StylesheetProps) (interface{}, error) {
 	m := minify.Default
 	out, err := m.String("text/css", result.String())
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	return out, nil
