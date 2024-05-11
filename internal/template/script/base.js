@@ -14,7 +14,7 @@ function run() {
 
   function handleScroll() {
     let scrollPosition = window.scrollY;
-    if (Math.abs(initialScrollPosition - scrollPosition) > 100) {
+    if (Math.abs(initialScrollPosition - scrollPosition) > 100 && videoConfig.sheight > 0) {
       setupIntroVideo();
       window.removeEventListener('scroll', handleScroll);
     }
@@ -22,6 +22,22 @@ function run() {
 
   window.addEventListener('scroll', handleScroll);
 
+}
+
+const videoConfig = {
+  sheight: 0,
+  swidth: 0,
+  lheight: 0,
+  lwidth: 0,
+}
+
+/**
+* @param {number} area
+* @param {number} aspectRatio
+* returns {number}
+*/
+function calculateWidth(area, aspectRatio) {
+  return Math.sqrt(area * aspectRatio);
 }
 
 /**
@@ -33,6 +49,15 @@ function preload(videoUrl) {
 
   const video = document.createElement('video');
 
+  video.addEventListener('loadeddata', () => {
+    const ratio = video.videoWidth / video.videoHeight;
+    videoConfig.swidth = calculateWidth(284*160, ratio);
+    videoConfig.sheight = videoConfig.swidth / ratio;
+
+    videoConfig.lwidth = calculateWidth(480*270, ratio);
+    videoConfig.lheight = videoConfig.lwidth / ratio;
+  });
+
   video.id = 'intro-video-player';
   video.classList.add('iv-player');
 
@@ -40,6 +65,8 @@ function preload(videoUrl) {
   video.loop = true;
   video.draggable = false;
   video.src = videoUrl;
+
+
 
   container.appendChild(video);
 }
@@ -64,6 +91,9 @@ function setupIntroVideo() {
 
   const card = document.createElement('div');
   card.classList.add('iv-card');
+
+  card.style.width = videoConfig.swidth + 'px';
+  card.style.height = videoConfig.sheight + 'px';
 
   let bubble = null;
   if (bubbleConfig && bubbleConfig.enabled) {
@@ -108,7 +138,8 @@ function setupIntroVideo() {
 
 
   videoWrapper.onclick = () => {
-    card.classList.add('large');
+    card.style.height = videoConfig.lheight + 'px';
+    card.style.width = videoConfig.lwidth + 'px';
     video.muted = false;
     videoWrapper.appendChild(cta);
     if (bubble) {
