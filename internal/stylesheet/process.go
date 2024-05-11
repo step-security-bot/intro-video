@@ -10,16 +10,8 @@ import (
 )
 
 type StylesheetProps struct {
-	Dimensions
 	Bubble
 	Cta
-}
-
-type Dimensions struct {
-	Swidth  int
-	Sheight int
-	Lwidth  int
-	Lheight int
 }
 
 type Bubble struct {
@@ -35,7 +27,6 @@ func Process(props StylesheetProps) (string, error) {
 	t, err := template.ParseFiles(
 		"internal/template/stylesheet/bubble.css.tmpl",
 		"internal/template/stylesheet/cta.css.tmpl",
-		"internal/template/stylesheet/dimension.css.tmpl",
 	)
 
 	if err != nil {
@@ -49,11 +40,6 @@ func Process(props StylesheetProps) (string, error) {
 	}
 
 	err = t.ExecuteTemplate(&buf, "cta", props.Cta)
-	if err != nil {
-		return "", err
-	}
-
-	err = t.ExecuteTemplate(&buf, "dimension", props.Dimensions)
 	if err != nil {
 		return "", err
 	}
