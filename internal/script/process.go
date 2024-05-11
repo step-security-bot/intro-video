@@ -7,23 +7,14 @@ import (
 	"io"
 	"os"
 
+	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/tdewolff/minify/v2/minify"
 )
 
 type ScriptProps struct {
 	Video
-	Bubble
-	Cta
-}
-
-type Bubble struct {
-	Enabled bool
-	TextContent string
-}
-
-type Cta struct {
-	Enabled bool
-	TextContent string
+	config.Bubble
+	config.Cta
 }
 
 type Video struct {

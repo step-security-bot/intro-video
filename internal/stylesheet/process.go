@@ -6,18 +6,13 @@ import (
 	"os"
 	"text/template"
 
+	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/tdewolff/minify/v2/minify"
 )
 
 type StylesheetProps struct {
-	Bubble
-	Cta
-}
-
-type Bubble struct {
-}
-
-type Cta struct {
+	config.Bubble
+	config.Cta
 }
 
 

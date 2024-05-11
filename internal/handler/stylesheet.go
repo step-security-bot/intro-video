@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/crocoder-dev/intro-video/internal/stylesheet"
 	"github.com/labstack/echo/v4"
 )
@@ -9,8 +10,8 @@ import (
 func Stylesheet(c echo.Context) error {
 
 	stylesheetProps := stylesheet.StylesheetProps{
-		Cta: stylesheet.Cta{},
-		Bubble: stylesheet.Bubble{},
+		Cta: config.Cta{},
+		Bubble: config.Bubble{},
 	}
 
 	style, err := stylesheet.Process(stylesheetProps)
