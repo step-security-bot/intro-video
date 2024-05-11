@@ -9,8 +9,8 @@ import (
 func Script(c echo.Context) error {
 	scriptProps := script.ScriptProps{
 		Video:  config.Video{URL: "https://youtube.com/shorts/9K2ioP7aZcA?si=VcNgKCTEgyw7NipJ"},
-		Cta:    config.Cta{Enabled: true, TextContent: "Test"},
-		Bubble: config.Bubble{Enabled: true, TextContent: "Test"},
+		Cta:    config.Cta{Enabled: true, TextContent: "Test", Type: config.DefaultCta},
+		Bubble: config.Bubble{Enabled: true, TextContent: "Test", Type: config.DefaultBubble},
 	}
 
 	script, err := script.Process(scriptProps)

@@ -1,10 +1,10 @@
 package config
 
-type CtaButtonType int
+type CtaButtonType string
 
 const (
-    DefaultCta CtaButtonType = iota
-	CustomCta
+    DefaultCta CtaButtonType = "default"
+	CustomCta CtaButtonType = "custom"
 )
 
 

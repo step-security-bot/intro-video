@@ -1,10 +1,10 @@
 package config
 
-type BubbleType int
+type BubbleType string
 
 const (
-	DefaultBubble BubbleType = iota
-	CustomBubble
+	DefaultBubble BubbleType = "default"
+	CustomBubble BubbleType = "custom"
 )
 
 type Bubble struct {
