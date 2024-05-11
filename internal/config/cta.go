@@ -4,6 +4,7 @@ type CtaButtonType int
 
 const (
     DefaultCta CtaButtonType = iota
+	CustomCta
 )
 
 

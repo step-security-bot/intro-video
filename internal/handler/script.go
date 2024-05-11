@@ -8,7 +8,7 @@ import (
 
 func Script(c echo.Context) error {
 	scriptProps := script.ScriptProps{
-		Video:  script.Video{URL: "https://youtube.com/shorts/9K2ioP7aZcA?si=VcNgKCTEgyw7NipJ"},
+		Video:  config.Video{URL: "https://youtube.com/shorts/9K2ioP7aZcA?si=VcNgKCTEgyw7NipJ"},
 		Cta:    config.Cta{Enabled: true, TextContent: "Test"},
 		Bubble: config.Bubble{Enabled: true, TextContent: "Test"},
 	}

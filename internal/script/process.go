@@ -12,13 +12,9 @@ import (
 )
 
 type ScriptProps struct {
-	Video
+	config.Video
 	config.Bubble
 	config.Cta
-}
-
-type Video struct {
-	URL string
 }
 
 func Process(props ScriptProps) (string, error) {
@@ -50,14 +46,18 @@ func Process(props ScriptProps) (string, error) {
 		return "", err
 	}
 
-	err = t.ExecuteTemplate(&buf, "bubble", props.Bubble)
-	if err != nil {
-		return "", err
+	if props.Bubble.Enabled {
+		err = t.ExecuteTemplate(&buf, "bubble", props.Bubble)
+		if err != nil {
+			return "", err
+		}
 	}
 
-	err = t.ExecuteTemplate(&buf, "cta", props.Cta)
-	if err != nil {
-		return "", err
+	if props.Cta.Enabled {
+		err = t.ExecuteTemplate(&buf, "cta", props.Cta)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	err = t.ExecuteTemplate(&end, "end", nil)

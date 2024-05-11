@@ -10,8 +10,8 @@ import (
 func Stylesheet(c echo.Context) error {
 
 	stylesheetProps := stylesheet.StylesheetProps{
-		Cta: config.Cta{},
-		Bubble: config.Bubble{},
+		Cta: config.Cta{ Enabled: true, TextContent: "Test" },
+		Bubble: config.Bubble{ Enabled: true, TextContent: "Test" },
 	}
 
 	style, err := stylesheet.Process(stylesheetProps)
