@@ -1,4 +1,4 @@
-package script
+package internal
 
 import (
 	"bytes"
@@ -7,17 +7,12 @@ import (
 	"io"
 	"os"
 
-	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/tdewolff/minify/v2/minify"
 )
 
-type ScriptProps struct {
-	config.Video
-	config.Bubble
-	config.Cta
-}
+type Script struct {}
 
-func Process(props ScriptProps) (string, error) {
+func (s Script) Process(props ProcessableFileProps) (string, error) {
 	if props.Video.URL == "" {
 		return "", errors.New("video URL is required")
 	}

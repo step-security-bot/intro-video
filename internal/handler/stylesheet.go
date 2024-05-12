@@ -2,14 +2,16 @@ package handler
 
 import (
 	"github.com/crocoder-dev/intro-video/internal/config"
-	"github.com/crocoder-dev/intro-video/internal/stylesheet"
+	"github.com/crocoder-dev/intro-video/internal"
 	"github.com/labstack/echo/v4"
 )
 
 
 func Stylesheet(c echo.Context) error {
 
-	stylesheetProps := stylesheet.StylesheetProps{
+	stylesheet := internal.Stylesheet{}
+
+	stylesheetProps := internal.ProcessableFileProps{
 		Cta: config.Cta{ Enabled: true, TextContent: "Test" },
 		Bubble: config.Bubble{ Enabled: true, TextContent: "Test" },
 	}

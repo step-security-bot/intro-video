@@ -1,4 +1,4 @@
-package stylesheet
+package internal
 
 import (
 	"bytes"
@@ -6,18 +6,13 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/tdewolff/minify/v2/minify"
 )
 
-type StylesheetProps struct {
-	config.Bubble
-	config.Cta
-}
+type Stylesheet struct{}
 
 
-
-func Process(props StylesheetProps) (string, error) {
+func (s Stylesheet) Process(props ProcessableFileProps) (string, error) {
 
 	t, err := template.ParseFiles(
 		"internal/template/stylesheet/bubble.css.tmpl",
