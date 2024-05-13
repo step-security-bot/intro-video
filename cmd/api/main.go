@@ -11,10 +11,12 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-
 	e.GET("/script.js", handler.Script)
 
 	e.GET("/style.css", handler.Stylesheet)
+
+	e.File("/", "internal/template/demo.html")
+
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
