@@ -19,20 +19,21 @@ func LoadInstance(id int32) (map[int32]Video, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := db.Query(
-		`SELECT
-			video.id,
-			instance.weight,
-			conf.id,
-			conf.bubble_enabled,
-			conf.bubble_text,
-			conf.cta_enabled,
-			conf.cta_text
-		FROM instance
-		JOIN video ON instance.video_id = video.id
-
-
-		`
+	rows, err := db.Query(`
+		SELECT
+			videos.id,
+			videos.weight,
+			confs.id,
+			confs.bubble_enabled,
+			confs.bubble_text_content,
+			confs.cta_enabled,
+			confs.cta_text_content
+		FROM instances
+		JOIN videos ON videos.instance_id = instances.id
+		JOIN configurations as confs ON confs.id = videos.configuration_id;
+		WHERE instances.id = $1;
+		`,
+		id,
 	)
 	return nil, nil
 }
