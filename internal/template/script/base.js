@@ -51,10 +51,10 @@ function preload(videoUrl) {
 
   video.addEventListener('loadeddata', () => {
     const ratio = video.videoWidth / video.videoHeight;
-    videoConfig.swidth = calculateWidth(284*160, ratio);
+    videoConfig.swidth = calculateWidth(284 * 160, ratio);
     videoConfig.sheight = videoConfig.swidth / ratio;
 
-    videoConfig.lwidth = calculateWidth(480*270, ratio);
+    videoConfig.lwidth = calculateWidth(480 * 270, ratio);
     videoConfig.lheight = videoConfig.lwidth / ratio;
   });
 
