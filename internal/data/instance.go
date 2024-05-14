@@ -4,11 +4,12 @@ import (
 	"database/sql"
 
 	"github.com/crocoder-dev/intro-video/internal"
+	"github.com/crocoder-dev/intro-video/internal/config"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 type Video struct {
-	id int32
+	id     int32
 	weight int32
 	internal.ProcessableFileProps
 }
@@ -35,7 +36,30 @@ func LoadInstance(id int32) (map[int32]Video, error) {
 		`,
 		id,
 	)
-	return nil, nil
+	defer rows.Close()
+
+	videos := make(map[int32]Video)
+
+	for rows.Next() {
+		var video Video
+		video.Bubble = config.Bubble{}
+		video.Cta = config.Cta{}
+
+		if err := rows.Scan(
+			&video.id,
+			&video.weight,
+			&video.Bubble.Enabled,
+			&video.Bubble.TextContent,
+			&video.Cta.Enabled,
+			&video.Cta.TextContent,
+		); err != nil {
+			return nil, err
+		}
+
+		videos[video.id] = video
+	}
+
+	return videos, nil
 }
 
 func SaveInstance(id int32, instance map[int32]Video) error {
