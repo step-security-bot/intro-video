@@ -1,14 +1,13 @@
 package handler
 
 import (
-	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/crocoder-dev/intro-video/internal"
+	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/labstack/echo/v4"
 )
 
 func Script(c echo.Context) error {
 	script := internal.Script{}
-
 
 	scriptProps := internal.ProcessableFileProps{
 		Video:  config.Video{URL: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"},

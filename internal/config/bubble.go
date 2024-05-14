@@ -4,12 +4,11 @@ type BubbleType string
 
 const (
 	DefaultBubble BubbleType = "default"
-	CustomBubble BubbleType = "custom"
+	CustomBubble  BubbleType = "custom"
 )
 
 type Bubble struct {
-	Enabled bool
+	Enabled     bool
 	TextContent string
-	Type BubbleType
+	Type        BubbleType
 }
-

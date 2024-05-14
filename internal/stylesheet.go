@@ -11,7 +11,6 @@ import (
 
 type Stylesheet struct{}
 
-
 func (s Stylesheet) Process(props ProcessableFileProps) (string, error) {
 
 	t, err := template.ParseFiles(

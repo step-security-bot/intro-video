@@ -10,7 +10,7 @@ import (
 	"github.com/tdewolff/minify/v2/minify"
 )
 
-type Script struct {}
+type Script struct{}
 
 func (s Script) Process(props ProcessableFileProps) (string, error) {
 	if props.Video.URL == "" {
