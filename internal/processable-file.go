@@ -5,7 +5,7 @@ import "github.com/crocoder-dev/intro-video/internal/config"
 type ProcessableFileProps struct {
 	config.Bubble
 	config.Cta
-	config.Video
+	URL string
 }
 
 type ProcessableFile interface {

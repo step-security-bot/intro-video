@@ -10,7 +10,7 @@ func Script(c echo.Context) error {
 	script := internal.Script{}
 
 	scriptProps := internal.ProcessableFileProps{
-		Video:  config.Video{URL: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"},
+		URL: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
 		Cta:    config.Cta{Enabled: true, TextContent: "Test", Type: config.DefaultCta},
 		Bubble: config.Bubble{Enabled: true, TextContent: "Test", Type: config.DefaultBubble},
 	}

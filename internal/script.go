@@ -13,7 +13,7 @@ import (
 type Script struct{}
 
 func (s Script) Process(props ProcessableFileProps) (string, error) {
-	if props.Video.URL == "" {
+	if props.URL == "" {
 		return "", errors.New("video URL is required")
 	}
 
@@ -36,7 +36,7 @@ func (s Script) Process(props ProcessableFileProps) (string, error) {
 		return "", err
 	}
 
-	err = t.ExecuteTemplate(&buf, "video", props.Video)
+	err = t.ExecuteTemplate(&buf, "video", props)
 	if err != nil {
 		return "", err
 	}
