@@ -10,8 +10,3 @@ internal/template/*_templ.go
 internal/template/**/*_templ.go
 
 .env
-
-#local toml files
-
-config*.toml
-!config.toml

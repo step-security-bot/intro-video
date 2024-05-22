@@ -2,9 +2,11 @@ package data
 
 import (
 	"database/sql"
+	"os"
 
 	"github.com/crocoder-dev/intro-video/internal"
 	"github.com/crocoder-dev/intro-video/internal/config"
+	"github.com/joho/godotenv"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
@@ -15,7 +17,11 @@ type Video struct {
 }
 
 func LoadInstance(id int32) (map[int32]Video, error) {
-	url := ""
+	err := godotenv.Load(".env")
+	if err != nil {
+		return nil, err
+	}
+	url := os.Getenv("DATABASE_URL")
 	db, err := sql.Open("libsql", url)
 	if err != nil {
 		return nil, err
