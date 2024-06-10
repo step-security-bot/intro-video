@@ -16,13 +16,24 @@ type Video struct {
 	internal.ProcessableFileProps
 }
 
-func LoadInstance(id int32) (map[int32]Video, error) {
+type Store struct {
+	DatabaseUrl string
+	DriverName string
+}
+
+func NewStore() (Store, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
-		return nil, err
+		return Store{}, err
 	}
 	url := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("libsql", url)
+
+	return Store{DatabaseUrl: url, DriverName: "libsql"}, nil
+
+}
+
+func (s *Store) LoadInstance(id int32) (map[int32]Video, error) {
+	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +79,6 @@ func LoadInstance(id int32) (map[int32]Video, error) {
 	return videos, nil
 }
 
-func SaveInstance(id int32, instance map[int32]Video) error {
+func (s *Store) SaveInstance(id int32, instance map[int32]Video) error {
 	return nil
 }
