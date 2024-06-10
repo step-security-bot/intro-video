@@ -11,16 +11,19 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/demo/script.js", handler.Script)
+	// e.GET("/demo/script.js", handler.Script)
 
-	e.GET("/demo/style.css", handler.Stylesheet)
+	// e.GET("/demo/style.css", handler.Stylesheet)
 
 	e.GET("/config", handler.Configuration)
+
+	e.GET("/intro-video", handler.IntroVideo)
+	e.GET("/js", handler.ServeJavaScript)
+	e.GET("/css", handler.ServeCSS)
 
 	e.File("/", "internal/template/demo.html")
 
 	e.Static("/", "public")
-
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

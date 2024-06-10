@@ -6,20 +6,21 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Script(c echo.Context) error {
+func Script(c echo.Context) (error, string) {
+	url := c.Get("url").(string)
+
 	script := internal.Script{}
 
 	scriptProps := internal.ProcessableFileProps{
-		URL: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+		URL:    url,
 		Cta:    config.Cta{Enabled: true, TextContent: "Test", Type: config.DefaultCta},
 		Bubble: config.Bubble{Enabled: true, TextContent: "Test", Type: config.DefaultBubble},
 	}
 
 	s, err := script.Process(scriptProps)
 	if err != nil {
-		return err
+		return err, ""
 	}
 
-	return c.Blob(200, "application/javascript; charset=utf-8", []byte(s))
-
+	return nil, s
 }

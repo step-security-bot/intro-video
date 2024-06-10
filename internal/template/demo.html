@@ -5,17 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
     <link href="/style.css" rel="stylesheet">
-    <link href="/demo/style.css" rel="stylesheet">
+    <link id="dynamic-css" rel="stylesheet" href="">
+    <!-- <link href="/demo/style.css" rel="stylesheet"> -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </head>
   <body>
-    <test-abc counter="2"></test-abc>
+    <!-- <test-abc counter="2"></test-abc> -->
     <main>
-      <div style="height:1500px;width:200px"></div>
-      <div id="intro-video"></div>
-      <script type="module" src="/components/test.js"></script>
-      <script type="module">
-        import setup from '/demo/script.js';
-        setup();
+      <main>
+        <form hx-get="/intro-video" hx-target="#intro-video" hx-swap="none">
+            <label for="URL">URL:</label>
+            <input type="text" name="URL" id="URL" value="https://www.taxmann.com/emailer/images/CompaniesAct.mp4">
+            <input type="submit" value="Submit">
+        </form>
+        <div style="height:1500px;width:200px"></div>
+        <div id="intro-video"></div>
+    </main>
+
+    <script>
+        document.addEventListener("htmx:afterSwap", (event) => {
+          if (event.detail.target.id === "intro-video") {
+            const data = JSON.parse(event.detail.xhr.responseText);
+            if (data.js) {
+              const script = document.createElement('script');
+              script.src = `/js?url=${encodeURIComponent(document.getElementById('URL').value)}`;
+              script.type = 'module';
+              document.body.appendChild(script);
+            }
+            if (data.css) {
+              const cssLink = document.getElementById('dynamic-css');
+              cssLink.href = `/css?url=${encodeURIComponent(document.getElementById('URL').value)}`;
+            }
+            const scriptEl = document.createElement('script');
+            scriptEl.type = 'module';
+            scriptEl.textContent = `import setup from "/js?url=${encodeURIComponent(document.getElementById('URL').value)}";setup();`;
+            document.head.appendChild(scriptEl)
+          }
+        });
     </script>
   </body>
 </html>
