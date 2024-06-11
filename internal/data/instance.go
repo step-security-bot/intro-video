@@ -15,11 +15,22 @@ type Instance struct {
 	Configurations map[int32]Configuration
 }
 
+type NewVideo struct {
+	Weight          int32
+	ConfigurationId int32
+	URL             string
+}
+
 type Video struct {
 	Id              int32
 	Weight          int32
 	ConfigurationId int32
 	URL             string
+}
+
+type NewConfiguration struct {
+	Bubble config.Bubble
+	Cta    config.Cta
 }
 
 type Configuration struct {
@@ -122,6 +133,37 @@ func (s *Store) LoadInstance(id int32) (Instance, error) {
 	return instance, nil
 }
 
-func (s *Store) SaveInstance(id int32, instance map[int32]Video) error {
+func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (Instance, error) {
+	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
+	if err != nil {
+		return Instance{}, err
+	}
+
+	_ = db.QueryRow(`
+		INSERT INTO configurations
+		(
+			bubble_enabled,
+			bubble_text_content,
+			bubble_type,
+			cta_enabled,
+			cta_text_content,
+			cta_type
+		)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id;
+		`,
+		configuration.Bubble.Enabled,
+		configuration.Bubble.TextContent,
+		configuration.Bubble.Type,
+		configuration.Cta.Enabled,
+		configuration.Cta.TextContent,
+		configuration.Cta.Type,
+	)
+
+
+	return Instance{}, nil
+}
+
+func (s *Store) SaveInstance(id int32) error {
 	return nil
 }
