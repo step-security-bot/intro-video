@@ -11,14 +11,16 @@ import (
 )
 
 type Video struct {
-	id     int32
-	weight int32
+	Id              int32
+	Weight          int32
+	URL             string
+	ConfigurationId int32
 	internal.ProcessableFileProps
 }
 
 type Store struct {
 	DatabaseUrl string
-	DriverName string
+	DriverName  string
 }
 
 func NewStore() (Store, error) {
@@ -41,14 +43,17 @@ func (s *Store) LoadInstance(id int32) (map[int32]Video, error) {
 		SELECT
 			videos.id,
 			videos.weight,
+			videos.url,
 			confs.id,
 			confs.bubble_enabled,
 			confs.bubble_text_content,
+			confs.bubble_type,
 			confs.cta_enabled,
-			confs.cta_text_content
+			confs.cta_text_content,
+			confs.cta_type
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
-		JOIN configurations as confs ON confs.id = videos.configuration_id;
+		JOIN configurations as confs ON confs.id = videos.configuration_id
 		WHERE instances.id = $1;
 		`,
 		id,
@@ -63,18 +68,23 @@ func (s *Store) LoadInstance(id int32) (map[int32]Video, error) {
 		video.Cta = config.Cta{}
 
 		if err := rows.Scan(
-			&video.id,
-			&video.weight,
+			&video.Id,
+			&video.Weight,
+			&video.URL,
+			&video.ConfigurationId,
 			&video.Bubble.Enabled,
 			&video.Bubble.TextContent,
+			&video.Bubble.Type,
 			&video.Cta.Enabled,
 			&video.Cta.TextContent,
+			&video.Cta.Type,
 		); err != nil {
 			return nil, err
 		}
 
-		videos[video.id] = video
+		videos[video.Id] = video
 	}
+
 
 	return videos, nil
 }

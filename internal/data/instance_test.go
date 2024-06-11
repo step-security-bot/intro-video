@@ -9,6 +9,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/crocoder-dev/intro-video/internal"
+	"github.com/crocoder-dev/intro-video/internal/config"
+	"github.com/crocoder-dev/intro-video/internal/data"
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
@@ -67,7 +70,53 @@ func TestLoadInstance(t *testing.T) {
 		}
 	}
 
+	_, err = db.Exec(`
+		INSERT INTO instances (id) VALUES (1);
 
-	t.Fatalf("Not implemented")
+		INSERT INTO configurations (id, bubble_enabled, bubble_text_content, bubble_type, cta_enabled, cta_text_content, cta_type)
+		VALUES (1, 1, "bubble text", "default", 1, "cta text", "default");
+
+		INSERT INTO videos (id, instance_id, configuration_id, weight, url)
+		VaLUES (1, 1, 1, 100, "url");
+	`)
+
+	if err != nil {
+		t.Fatalf("failed to insert test data: %v", err)
+	}
+
+	store := data.Store{DatabaseUrl: file.Name(), DriverName: "sqlite3"}
+
+	instance, err := store.LoadInstance(1)
+
+	expected := map[int32]data.Video{
+		1: {
+			Id:              1,
+			Weight:          100,
+			URL:             "url",
+			ConfigurationId: 1,
+			ProcessableFileProps: internal.ProcessableFileProps{
+				Bubble: config.Bubble{
+					Enabled:     true,
+					TextContent: "bubble text",
+					Type:        config.DefaultBubble,
+				},
+				Cta: config.Cta{
+					Enabled:     true,
+					TextContent: "cta text",
+					Type:        config.DefaultCta,
+				},
+			},
+		},
+	}
+
+	if len(instance) != len(expected) {
+		t.Fatalf("Length of returned map (%d) does not match expected length (%d)", len(instance), len(expected))
+	}
+
+	for id, video := range expected {
+		if v, ok := instance[id]; !ok || v != video {
+			t.Fatalf("Video with id %d not found or does not match expected", id)
+		}
+	}
 
 }
