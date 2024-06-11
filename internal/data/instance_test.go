@@ -9,28 +9,18 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/crocoder-dev/intro-video/internal"
 	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/crocoder-dev/intro-video/internal/data"
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
-func TestLoadInstance(t *testing.T) {
-
-	file, err := os.CreateTemp("", "test*.db")
-
-	if err != nil {
-		t.Fatalf("failed to create database file: %v", err)
-	}
-
-	defer os.Remove(file.Name())
-
+func getMigrationSchemas() ([]string, error) {
 	migrationsPath := filepath.Join("..", "..", "db", "migrations")
 
 	var schemaFiles []string
 
-	err = filepath.WalkDir(migrationsPath, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(migrationsPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -43,10 +33,23 @@ func TestLoadInstance(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Fatalf("failed to read schema files: %v", err)
+		return nil, err
 	}
 
 	sort.Strings(schemaFiles)
+
+	return schemaFiles, nil
+}
+
+func TestLoadInstance(t *testing.T) {
+
+	file, err := os.CreateTemp("", "test*.db")
+
+	if err != nil {
+		t.Fatalf("failed to create database file: %v", err)
+	}
+
+	defer os.Remove(file.Name())
 
 	db, err := sql.Open("sqlite3", file.Name())
 
@@ -55,6 +58,12 @@ func TestLoadInstance(t *testing.T) {
 	}
 
 	defer db.Close()
+
+	schemaFiles, err := getMigrationSchemas()
+
+	if err != nil {
+		t.Fatalf("failed to read schema files: %v", err)
+	}
 
 	for _, schemaFile := range schemaFiles {
 		schema, err := os.ReadFile(schemaFile)
@@ -88,34 +97,50 @@ func TestLoadInstance(t *testing.T) {
 
 	instance, err := store.LoadInstance(1)
 
-	expected := map[int32]data.Video{
-		1: {
-			Id:              1,
-			Weight:          100,
-			URL:             "url",
-			ConfigurationId: 1,
-			ProcessableFileProps: internal.ProcessableFileProps{
+	expected := data.Instance{
+		Id: 1,
+		Videos: map[int32]data.Video{
+			1: {
+				Id:              1,
+				Weight:          100,
+				ConfigurationId: 1,
+				URL:             "url",
+			},
+		},
+		Configurations: map[int32]data.Configuration{
+			1: {
+				Id: 1,
 				Bubble: config.Bubble{
 					Enabled:     true,
 					TextContent: "bubble text",
-					Type:        config.DefaultBubble,
+					Type:        "default",
 				},
 				Cta: config.Cta{
 					Enabled:     true,
 					TextContent: "cta text",
-					Type:        config.DefaultCta,
+					Type:        "default",
 				},
 			},
 		},
 	}
 
-	if len(instance) != len(expected) {
-		t.Fatalf("Length of returned map (%d) does not match expected length (%d)", len(instance), len(expected))
+	if len(instance.Videos) != len(expected.Videos) {
+		t.Fatalf("Expected %d videos, got %d", len(expected.Videos), len(instance.Videos))
 	}
 
-	for id, video := range expected {
-		if v, ok := instance[id]; !ok || v != video {
+	if len(instance.Configurations) != len(expected.Configurations) {
+		t.Fatalf("Expected %d configurations, got %d", len(expected.Configurations), len(instance.Configurations))
+	}
+
+	for id, video := range expected.Videos {
+		if v, ok := instance.Videos[id]; !ok || v != video {
 			t.Fatalf("Video with id %d not found or does not match expected", id)
+		}
+	}
+
+	for id, config := range expected.Configurations {
+		if c, ok := instance.Configurations[id]; !ok || c != config {
+			t.Fatalf("Configuration with id %d not found or does not match expected", id)
 		}
 	}
 
