@@ -4,70 +4,124 @@ import (
 	"database/sql"
 	"os"
 
-	"github.com/crocoder-dev/intro-video/internal"
 	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/joho/godotenv"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
-type Video struct {
-	id     int32
-	weight int32
-	internal.ProcessableFileProps
+type Instance struct {
+	Id             int32
+	Videos         map[int32]Video
+	Configurations map[int32]Configuration
 }
 
-func LoadInstance(id int32) (map[int32]Video, error) {
+type Video struct {
+	Id              int32
+	Weight          int32
+	ConfigurationId int32
+	URL             string
+}
+
+type Configuration struct {
+	Id     int32
+	Bubble config.Bubble
+	Cta    config.Cta
+}
+
+type Store struct {
+	DatabaseUrl string
+	DriverName  string
+}
+
+func NewStore() (Store, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
-		return nil, err
+		return Store{}, err
 	}
 	url := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("libsql", url)
+
+	return Store{DatabaseUrl: url, DriverName: "libsql"}, nil
+
+}
+
+func (s *Store) LoadInstance(id int32) (Instance, error) {
+	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
 	if err != nil {
-		return nil, err
+		return Instance{}, err
 	}
+
 	rows, err := db.Query(`
 		SELECT
 			videos.id,
 			videos.weight,
-			confs.id,
-			confs.bubble_enabled,
-			confs.bubble_text_content,
-			confs.cta_enabled,
-			confs.cta_text_content
+			videos.url,
+			videos.configuration_id
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
-		JOIN configurations as confs ON confs.id = videos.configuration_id;
 		WHERE instances.id = $1;
 		`,
 		id,
 	)
 	defer rows.Close()
 
-	videos := make(map[int32]Video)
+	instance := Instance{Id: id, Videos: map[int32]Video{}, Configurations: map[int32]Configuration{}}
 
 	for rows.Next() {
 		var video Video
-		video.Bubble = config.Bubble{}
-		video.Cta = config.Cta{}
 
 		if err := rows.Scan(
-			&video.id,
-			&video.weight,
-			&video.Bubble.Enabled,
-			&video.Bubble.TextContent,
-			&video.Cta.Enabled,
-			&video.Cta.TextContent,
+			&video.Id,
+			&video.Weight,
+			&video.URL,
+			&video.ConfigurationId,
 		); err != nil {
-			return nil, err
+			return Instance{}, err
 		}
 
-		videos[video.id] = video
+		instance.Videos[video.Id] = video
 	}
 
-	return videos, nil
+	rows, err = db.Query(`
+		SELECT DISTINCT
+			config.id,
+			config.bubble_enabled,
+			config.bubble_text_content,
+			config.bubble_type,
+			config.cta_enabled,
+			config.cta_text_content,
+			config.cta_type
+		FROM instances
+		JOIN videos ON videos.instance_id = instances.id
+		JOIN configurations as config ON videos.configuration_id = config.id
+		WHERE instances.id = $1;
+		`,
+		id,
+	)
+	defer rows.Close()
+
+	for rows.Next() {
+		var configuration Configuration
+
+		configuration.Bubble = config.Bubble{}
+		configuration.Cta = config.Cta{}
+
+		if err := rows.Scan(
+			&configuration.Id,
+			&configuration.Bubble.Enabled,
+			&configuration.Bubble.TextContent,
+			&configuration.Bubble.Type,
+			&configuration.Cta.Enabled,
+			&configuration.Cta.TextContent,
+			&configuration.Cta.Type,
+		); err != nil {
+			return Instance{}, err
+		}
+		instance.Configurations[configuration.Id] = configuration
+	}
+
+	return instance, nil
 }
 
-func SaveInstance(id int32, instance map[int32]Video) error {
+func (s *Store) SaveInstance(id int32, instance map[int32]Video) error {
 	return nil
 }
