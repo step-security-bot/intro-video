@@ -11,6 +11,7 @@ import (
 
 	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/crocoder-dev/intro-video/internal/data"
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
@@ -79,15 +80,23 @@ func TestLoadInstance(t *testing.T) {
 		}
 	}
 
+	newUUID := uuid.New()
+
+	binUUID, err := newUUID.MarshalBinary()
+
+	if err != nil {
+		t.Fatalf("failed to marshal uuid: %v", err)
+	}
+
 	_, err = db.Exec(`
-		INSERT INTO instances (id) VALUES (1);
+		INSERT INTO instances (id, uuid) VALUES (1, ?);
 
 		INSERT INTO configurations (id, bubble_enabled, bubble_text_content, bubble_type, cta_enabled, cta_text_content, cta_type)
 		VALUES (1, 1, "bubble text", "default", 1, "cta text", "default");
 
 		INSERT INTO videos (id, instance_id, configuration_id, weight, url)
 		VaLUES (1, 1, 1, 100, "url");
-	`)
+		`, binUUID)
 
 	if err != nil {
 		t.Fatalf("failed to insert test data: %v", err)
@@ -95,10 +104,10 @@ func TestLoadInstance(t *testing.T) {
 
 	store := data.Store{DatabaseUrl: file.Name(), DriverName: "sqlite3"}
 
-	instance, err := store.LoadInstance(1)
+	instance, err := store.LoadInstance(binUUID)
 
 	expected := data.Instance{
-		Id: 1,
+		Uuid: newUUID[:],
 		Videos: map[int32]data.Video{
 			1: {
 				Id:              1,
@@ -122,6 +131,24 @@ func TestLoadInstance(t *testing.T) {
 				},
 			},
 		},
+	}
+
+	expectedUUID := uuid.New()
+	err = expectedUUID.UnmarshalBinary(binUUID)
+
+	if err != nil {
+		t.Fatalf("failed to unmarshal uuid: %v", err)
+	}
+
+	instanceUUID := uuid.New()
+	err = instanceUUID.UnmarshalBinary(instance.Uuid)
+
+	if err != nil {
+		t.Fatalf("failed to unmarshal uuid: %v", err)
+	}
+
+	if instanceUUID != expectedUUID {
+		t.Fatalf("Expected uuid %s, got %s", expectedUUID, instanceUUID)
 	}
 
 	if len(instance.Videos) != len(expected.Videos) {

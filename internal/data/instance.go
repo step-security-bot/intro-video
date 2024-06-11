@@ -11,6 +11,7 @@ import (
 
 type Instance struct {
 	Id             int32
+	Uuid           []byte
 	Videos         map[int32]Video
 	Configurations map[int32]Configuration
 }
@@ -55,7 +56,7 @@ func NewStore() (Store, error) {
 
 }
 
-func (s *Store) LoadInstance(id int32) (Instance, error) {
+func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
 	if err != nil {
 		return Instance{}, err
@@ -69,13 +70,13 @@ func (s *Store) LoadInstance(id int32) (Instance, error) {
 			videos.configuration_id
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
-		WHERE instances.id = $1;
+		WHERE instances.uuid = ?;
 		`,
-		id,
+		uuid,
 	)
 	defer rows.Close()
 
-	instance := Instance{Id: id, Videos: map[int32]Video{}, Configurations: map[int32]Configuration{}}
+	instance := Instance{Uuid: uuid, Videos: map[int32]Video{}, Configurations: map[int32]Configuration{}}
 
 	for rows.Next() {
 		var video Video
@@ -104,9 +105,9 @@ func (s *Store) LoadInstance(id int32) (Instance, error) {
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
 		JOIN configurations as config ON videos.configuration_id = config.id
-		WHERE instances.id = $1;
+		WHERE instances.uuid = ?;
 		`,
-		id,
+		uuid,
 	)
 	defer rows.Close()
 
@@ -159,7 +160,6 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 		configuration.Cta.TextContent,
 		configuration.Cta.Type,
 	)
-
 
 	return Instance{}, nil
 }

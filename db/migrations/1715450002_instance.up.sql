@@ -1,4 +1,6 @@
 CREATE TABLE `instances` (
-	`id` integer PRIMARY KEY NOT NULL
+	`id` INTEGER PRIMARY KEY NOT NULL,
+  `uuid` BLOB UNIQUE NOT NULL
 );
 
+CREATE INDEX instances_uuid_idx ON instances(uuid);
