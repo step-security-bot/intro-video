@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/crocoder-dev/intro-video/internal/config"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
@@ -17,9 +18,8 @@ type Instance struct {
 }
 
 type NewVideo struct {
-	Weight          int32
-	ConfigurationId int32
-	URL             string
+	Weight int32
+	URL    string
 }
 
 type Video struct {
@@ -134,13 +134,32 @@ func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 	return instance, nil
 }
 
+// TODO: Queries should be in a transaction
 func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (Instance, error) {
 	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
 	if err != nil {
 		return Instance{}, err
 	}
 
-	_ = db.QueryRow(`
+	newUUID := uuid.New()
+
+	binUUID, err := newUUID.MarshalBinary()
+
+	row := db.QueryRow(`
+		INSERT INTO instances (uuid)
+		VALUES (?)
+		RETURNING id;
+	`, binUUID)
+
+	var instanceId = int32(0)
+
+	err = row.Scan(&instanceId)
+
+	if err != nil {
+		return Instance{}, err
+	}
+
+	row = db.QueryRow(`
 		INSERT INTO configurations
 		(
 			bubble_enabled,
@@ -150,7 +169,7 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 			cta_text_content,
 			cta_type
 		)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		VALUES (?, ?, ?, ?, ?, ?)
 		RETURNING id;
 		`,
 		configuration.Bubble.Enabled,
@@ -161,9 +180,54 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 		configuration.Cta.Type,
 	)
 
-	return Instance{}, nil
-}
+	var configurationId = int32(0)
 
-func (s *Store) SaveInstance(id int32) error {
-	return nil
+	err = row.Scan(&configurationId)
+
+	if err != nil {
+		return Instance{}, err
+	}
+
+	row = db.QueryRow(`
+		INSERT INTO videos
+		(
+			weight,
+			url,
+			configuration_id,
+			instance_id
+		)
+		Values (?, ?, ?)
+		RETURNING id;
+		`,
+		video.Weight,
+		video.URL,
+		configurationId,
+		instanceId,
+	)
+
+	var videoId = int32(0)
+
+	row.Scan(&videoId)
+
+	instance := Instance{
+		Id:             instanceId,
+		Uuid:           binUUID,
+		Videos:         map[int32]Video{},
+		Configurations: map[int32]Configuration{},
+	}
+
+	instance.Videos[videoId] = Video{
+		Id:              videoId,
+		Weight:          video.Weight,
+		URL:             video.URL,
+		ConfigurationId: configurationId,
+	}
+
+	instance.Configurations[configurationId] = Configuration{
+		Id:     configurationId,
+		Bubble: configuration.Bubble,
+		Cta:    configuration.Cta,
+	}
+
+	return instance, nil
 }

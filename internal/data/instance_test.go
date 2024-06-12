@@ -42,6 +42,113 @@ func getMigrationSchemas() ([]string, error) {
 	return schemaFiles, nil
 }
 
+func TestCreateInstance(t *testing.T) {
+	file, err := os.CreateTemp("", "test*.db")
+
+	if err != nil {
+		t.Fatalf("failed to create database file: %v", err)
+	}
+
+	defer os.Remove(file.Name())
+
+	db, err := sql.Open("sqlite3", file.Name())
+
+	if err != nil {
+		t.Fatalf("failed to open database: %v", err)
+	}
+
+	defer db.Close()
+
+	schemaFiles, err := getMigrationSchemas()
+
+	if err != nil {
+		t.Fatalf("failed to read schema files: %v", err)
+	}
+
+	for _, schemaFile := range schemaFiles {
+		schema, err := os.ReadFile(schemaFile)
+
+		if err != nil {
+			t.Fatalf("failed to read schema file %s: %v", schemaFile, err)
+		}
+
+		_, err = db.Exec(string(schema))
+
+		if err != nil {
+			t.Fatalf("failed to execute schema %s: %v", schemaFile, err)
+		}
+	}
+
+	store := data.Store{DatabaseUrl: file.Name(), DriverName: "sqlite3"}
+
+	newVideo := data.NewVideo{Weight: 100, URL: "url"}
+	newConfiguration := data.NewConfiguration{
+		Bubble: config.Bubble{
+			Enabled:     true,
+			TextContent: "bubble text",
+			Type:        config.DefaultBubble,
+		},
+		Cta: config.Cta{
+			Enabled:     true,
+			TextContent: "cta text",
+			Type:        config.DefaultCta,
+		},
+	}
+
+	instance, err := store.CreateInstance(newVideo, newConfiguration)
+
+	if err != nil {
+		t.Fatalf("failed to create instance: %v", err)
+	}
+
+	expected := data.Instance{
+		Id:             instance.Id,
+		Uuid:           instance.Uuid,
+		Videos:         map[int32]data.Video{},
+		Configurations: map[int32]data.Configuration{},
+	}
+
+
+
+	for _, video := range instance.Videos {
+		expected.Videos[video.Id] = data.Video{
+			Id:              video.Id,
+			Weight:          newVideo.Weight,
+			ConfigurationId: video.ConfigurationId,
+			URL:             newVideo.URL,
+		}
+	}
+
+	for _, configuration := range instance.Configurations {
+		expected.Configurations[configuration.Id] = data.Configuration{
+			Id: configuration.Id,
+			Bubble: newConfiguration.Bubble,
+			Cta:    newConfiguration.Cta,
+		}
+	}
+
+	if len(instance.Videos) != 1 {
+		t.Fatalf("Expected 1 video, got %d", len(instance.Videos))
+	}
+
+	if len(instance.Configurations) != 1 {
+		t.Fatalf("Expected 1 configuration, got %d", len(instance.Configurations))
+	}
+
+	for id, video := range expected.Videos {
+		if v, ok := instance.Videos[id]; !ok || v != video {
+			t.Fatalf("Video with id %d not found or does not match expected", id)
+		}
+	}
+
+	for id, config := range expected.Configurations {
+		if c, ok := instance.Configurations[id]; !ok || c != config {
+			t.Fatalf("Configuration with id %d not found or does not match expected", id)
+		}
+	}
+
+}
+
 func TestLoadInstance(t *testing.T) {
 
 	file, err := os.CreateTemp("", "test*.db")
