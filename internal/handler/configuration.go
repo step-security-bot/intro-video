@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/crocoder-dev/intro-video/internal/template"
 	"github.com/labstack/echo/v4"
 )
@@ -19,7 +20,17 @@ func Configuration(c echo.Context) error {
 		fmt.Println("uuid is:", uuid)
 	}
 
-	component := template.Configuration()
+	bubleOptions := []template.BubbleOption{
+		{Caption: "Default Bubble", Value: config.DefaultBubble, Selected: true},
+		{Caption: "Custom Bubble", Value: config.CustomBubble, Selected: false},
+	}
+
+	ctaOptions := []template.CtaOption{
+		{Caption: "Default CTA", Value: config.DefaultCta, Selected: true},
+		{Caption: "Custom CTA", Value: config.CustomCta, Selected: false},
+	}
+
+	component := template.Configuration(bubleOptions, ctaOptions)
 	return component.Render(context.Background(), c.Response().Writer)
 }
 
