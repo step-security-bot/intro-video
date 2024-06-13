@@ -25,7 +25,7 @@ func GenerateCode(c echo.Context) error {
 	}
 	c.Set("url", url)
 
-	err, js := Script(c)
+	/*err, js := Script(c)
 	if err != nil {
 		return err
 	}
@@ -37,4 +37,6 @@ func GenerateCode(c echo.Context) error {
 
 	components := template.CodeTextareas(css, js)
 	return components.Render(context.Background(), c.Response().Writer)
+	*/
+	return nil
 }

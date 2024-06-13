@@ -11,14 +11,13 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// e.GET("/demo/script.js", handler.Script)
+	e.GET("/demo/script.js", handler.Script)
 
-	// e.GET("/demo/style.css", handler.Stylesheet)
+	e.GET("/demo/style.css", handler.Stylesheet)
 
 	e.GET("/config", handler.Configuration)
 
-	e.GET("/", handler.IntroVideo)
-	e.POST("/generate-code", handler.GenerateCode)
+	e.File("/", "internal/template/demo.html")
 
 	e.Static("/", "public")
 

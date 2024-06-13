@@ -6,21 +6,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Stylesheet(c echo.Context) (error, string) {
-	url := c.Get("url").(string)
-
+func Stylesheet(c echo.Context) error {
 	stylesheet := internal.Stylesheet{}
 
 	stylesheetProps := internal.ProcessableFileProps{
-		URL:    url,
+		URL:    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
 		Cta:    config.Cta{Enabled: true, TextContent: "Test"},
 		Bubble: config.Bubble{Enabled: true, TextContent: "Test"},
 	}
 
 	style, err := stylesheet.Process(stylesheetProps)
 	if err != nil {
-		return err, ""
+		return err
 	}
 
-	return nil, style
+	return c.Blob(200, "text/css; charset=utf-8", []byte(style))
 }
