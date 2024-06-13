@@ -46,7 +46,7 @@ func GenerateCode(c echo.Context) error {
 	bubbleType := c.FormValue("bubble-type")
 	ctaEnabled := c.FormValue("cta-enabled")
 	ctaTextContent := c.FormValue("cta-text")
-	ctaType := c.FormValue("cta-tzpe")
+	ctaType := c.FormValue("cta-type")
 	if url == "" {
 		return c.String(http.StatusBadRequest, "Invalid data")
 	}

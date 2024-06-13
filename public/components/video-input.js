@@ -64,13 +64,13 @@ function validateVideoUrl(url) {
 }
 
 class VideoInput extends LitElement {
+  static formAssociated = true;
   static styles = css`
     ${unsafeCSS([...globalStyles.rules].map(rule => rule.cssText).join(''))}
     :host {
       display: block
     }
   `;
-  static formAssociated = true;
 
   static properties = {
     id: { type: String },
@@ -83,10 +83,10 @@ class VideoInput extends LitElement {
     this.state = states.initial;
     this.id = 'video-url';
     this.name = 'video-url';
-    this.internals = this.attachInternals();
   }
 
-  handleInput() {
+  handleInput(e) {
+    this.value = e.target.value;
     clearTimeout(this.timeout);
     this.state = states.loading;
     this.requestUpdate();
@@ -103,7 +103,6 @@ class VideoInput extends LitElement {
       } else {
         this.state = states.error
       }
-      this.internals.setFormValue(value)
     }, 500);
   }
 
@@ -118,7 +117,7 @@ class VideoInput extends LitElement {
           pattern="https://.*"
           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           required
-          @input=${this.handleInput}
+          @input="${this.handleInput}"
         />
       ${this.state === states.loading ? loaderSVG : ''}
       ${this.state === states.valid ? validSVG : ''}
