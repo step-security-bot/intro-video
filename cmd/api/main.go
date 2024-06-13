@@ -21,6 +21,7 @@ func main() {
 
 
 
+	e.GET("/config", handler.Configuration)
 	e.POST("/config", handler.GenerateCode)
 
 	e.File("/", "internal/template/demo.html")
