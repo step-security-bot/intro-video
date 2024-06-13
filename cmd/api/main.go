@@ -21,6 +21,8 @@ func main() {
 
 
 
+	e.POST("/config", handler.GenerateCode)
+
 	e.File("/", "internal/template/demo.html")
 
 	e.Static("/", "public")
