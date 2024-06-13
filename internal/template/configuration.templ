@@ -1,15 +1,15 @@
 package template
 
-templ Input() {
-<label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
+templ Input(inputType string, title string, placeholder string) {
+<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{title}</label>
 <div class="relative mt-2 rounded-md shadow-sm">
-	<input type="email" name="email" id="email"
+	<input type={inputType} name="email" id="email"
 		class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6"
-		placeholder="you@example.com" aria-invalid="false" />
+		placeholder={placeholder} aria-invalid="false" />
 </div>
 }
 
-templ LoadingInput() {
+templ LoadingInput(inputType string, title string, placeholder string,) {
 <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
 <div class="relative mt-2 rounded-md shadow-sm">
 	<input type="email" name="email" id="email"
@@ -25,7 +25,7 @@ templ LoadingInput() {
 </div>
 }
 
-templ InputValidation() {
+templ InputValidation(inputType string, title string, placeholder string,) {
 <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
 <div class="relative mt-2 rounded-md shadow-sm">
 	<input type="email" name="email" id="email"
@@ -42,7 +42,7 @@ templ InputValidation() {
 <p class="mt-2 text-sm text-red-600" id="email-error">Not a valid email address.</p>
 }
 
-templ ValidatedInput() {
+templ ValidatedInput(inputType string, title string, placeholder string,) {
 <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
 <div class="relative mt-2 rounded-md shadow-sm">
 	<input type="email" name="email" id="email"
@@ -90,16 +90,16 @@ templ Configuration() {
 						</div>
 					</div>
 					<div class="col-span-full">
-						@Input()
+						@Input("email", "Email123", "you@example.com")
 					</div>
 					<div class="col-span-full">
-						@LoadingInput()
+						@LoadingInput("email", "Email", "you@example.com")
 					</div>
 					<div class="col-span-full">
-						@InputValidation()
+						@InputValidation("email", "Email", "you@example.com")
 					</div>
 					<div class="col-span-full">
-						@ValidatedInput()
+						@ValidatedInput("email", "Email", "you@example.com")
 					</div>
 					<div class="col-span-full">
 						<label for="about" class="block text-sm font-medium leading-6 text-gray-900">About</label>

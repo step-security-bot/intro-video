@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/crocoder-dev/intro-video/internal/template"
 	"github.com/labstack/echo/v4"
 )
 
@@ -12,24 +14,12 @@ type IntroVideoData struct {
 }
 
 func IntroVideo(c echo.Context) error {
-	url := c.QueryParam("URL")
-	if url == "" {
-		return c.String(http.StatusBadRequest, "Invalid data")
-	}
-
-	jsUrl := "/js?url=" + url
-	cssUrl := "/css?url=" + url
-
-	data := IntroVideoData{
-		Js:  jsUrl,
-		Css: cssUrl,
-	}
-
-	return c.JSON(http.StatusOK, data)
+	components := template.IntroVideoPage()
+	return components.Render(context.Background(), c.Response().Writer)
 }
 
-func ServeJavaScript(c echo.Context) error {
-	url := c.QueryParam("url")
+func GenerateCode(c echo.Context) error {
+	url := c.FormValue("url")
 	if url == "" {
 		return c.String(http.StatusBadRequest, "Invalid data")
 	}
@@ -40,22 +30,11 @@ func ServeJavaScript(c echo.Context) error {
 		return scriptErr
 	}
 
-	c.Response().Header().Set(echo.HeaderContentType, "application/javascript")
-	return c.String(http.StatusOK, js)
-}
-
-func ServeCSS(c echo.Context) error {
-	url := c.QueryParam("url")
-	if url == "" {
-		return c.String(http.StatusBadRequest, "Invalid data")
-	}
-	c.Set("url", url)
-
 	stylesheetErr, css := Stylesheet(c)
 	if stylesheetErr != nil {
 		return stylesheetErr
 	}
 
-	c.Response().Header().Set(echo.HeaderContentType, "text/css")
-	return c.String(http.StatusOK, css)
+	components := template.CodeTextareas(css, js)
+	return components.Render(context.Background(), c.Response().Writer)
 }

@@ -17,11 +17,8 @@ func main() {
 
 	e.GET("/config", handler.Configuration)
 
-	e.GET("/intro-video", handler.IntroVideo)
-	e.GET("/js", handler.ServeJavaScript)
-	e.GET("/css", handler.ServeCSS)
-
-	e.File("/", "internal/template/demo.html")
+	e.GET("/", handler.IntroVideo)
+	e.POST("/generate-code", handler.GenerateCode)
 
 	e.Static("/", "public")
 

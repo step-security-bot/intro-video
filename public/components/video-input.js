@@ -104,7 +104,8 @@ class VideoInput extends LitElement {
 
   render() {
     return html`
-      <div class="mt-2">
+      <label for="url" class="block text-sm font-medium leading-6 text-gray-900">Video URL:</label>
+      <div class="mt-2 flex items-center gap-2">
         <input
           id="${this.id}"
           name="${this.name}"
