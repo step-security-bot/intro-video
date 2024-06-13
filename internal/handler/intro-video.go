@@ -25,12 +25,12 @@ func GenerateCode(c echo.Context) error {
 	}
 	c.Set("url", url)
 
-	js, err := Script(c)
+	err, js := Script(c)
 	if err != nil {
 		return err
 	}
 
-	css, err := Stylesheet(c)
+	err, css := Stylesheet(c)
 	if err != nil {
 		return err
 	}
