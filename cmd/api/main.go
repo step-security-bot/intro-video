@@ -19,11 +19,6 @@ func main() {
 	e.GET("/v/new", handler.Configuration)
 	e.POST("/v/new", handler.IntroVideoCode)
 
-
-
-	e.GET("/config", handler.Configuration)
-	e.POST("/config", handler.GenerateCode)
-
 	e.File("/", "internal/template/demo.html")
 
 	e.Static("/", "public")

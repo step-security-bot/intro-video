@@ -3,8 +3,9 @@ package handler
 import (
 	"context"
 	"fmt"
-	"net/http"
+	"strconv"
 
+	"github.com/crocoder-dev/intro-video/internal"
 	"github.com/crocoder-dev/intro-video/internal/config"
 	"github.com/crocoder-dev/intro-video/internal/template"
 	"github.com/labstack/echo/v4"
@@ -35,40 +36,63 @@ func Configuration(c echo.Context) error {
 }
 
 func IntroVideoCode(c echo.Context) error {
-	component := template.IntroVideoCode()
-	return component.Render(context.Background(), c.Response().Writer)
-}
-
-func GenerateCode(c echo.Context) error {
-	url := c.FormValue("url")
-	bubbleEnabled := c.FormValue("bubble-enabled")
-	bubbleTextContent := c.FormValue("bubble-text")
-	bubbleType := c.FormValue("bubble-type")
-	ctaEnabled := c.FormValue("cta-enabled")
-	ctaTextContent := c.FormValue("cta-text")
-	ctaType := c.FormValue("cta-type")
-	if url == "" {
-		return c.String(http.StatusBadRequest, "Invalid data")
+	url := c.FormValue(template.URL)
+	bubbleEnabled, err := strconv.ParseBool(c.FormValue(template.BUBBLE_ENABLED))
+	if err != nil {
+		return err
 	}
-	c.Set("url", url)
-	c.Set("bubbleEnabled", bubbleEnabled)
-	c.Set("bubbleTextContent", bubbleTextContent)
-	c.Set("bubbleType", bubbleType)
-	c.Set("ctaEnabled", ctaEnabled)
-	c.Set("ctaTextContent", ctaTextContent)
-	c.Set("ctaType", ctaType)
 
-	// err, js := Script(c)
-	// if err != nil {
-	// 	return err
-	// }
+	var bubbleTextContent string
+	var bubbleType config.BubbleType
 
-	// err, css := Stylesheet(c)
-	// if err != nil {
-	// 	return err
-	// }
+	if bubbleEnabled {
+		bubbleTextContent = c.FormValue(template.BUBBLE_TEXT)
+		bubbleType, err = config.NewBubbleType(c.FormValue(template.BUBBLE_TYPE))
+		if err != nil {
+			return err
+		}
+	}
 
-	// components := template.CodePreview(css, js)
-	// return components.Render(context.Background(), c.Response().Writer)
-	return nil
+	ctaEnabled, err := strconv.ParseBool(c.FormValue(template.CTA_ENABLED))
+	if err != nil {
+		return err
+	}
+
+	var ctaTextContent string
+	var ctaButtonType config.CtaButtonType
+
+	if ctaEnabled {
+		ctaTextContent = c.FormValue(template.CTA_TEXT)
+		ctaButtonType, err = config.NewCtaButtonType(c.FormValue(template.CTA_TYPE))
+		if err != nil {
+			return err
+		}
+	}
+
+	processableFileProps := internal.ProcessableFileProps{
+		URL: url,
+		Bubble: config.Bubble{
+			Enabled:     bubbleEnabled,
+			TextContent: bubbleTextContent,
+			Type:        bubbleType,
+		},
+		Cta: config.Cta{
+			Enabled:     ctaEnabled,
+			TextContent: ctaTextContent,
+			Type:        ctaButtonType,
+		},
+	}
+
+	js, err := internal.Script{}.Process(processableFileProps)
+	if err != nil {
+		return err
+	}
+
+	css, err := internal.Stylesheet{}.Process(processableFileProps)
+	if err != nil {
+		return err
+	}
+
+	component := template.IntroVideoCode(js, css)
+	return component.Render(context.Background(), c.Response().Writer)
 }
