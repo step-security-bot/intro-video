@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/crocoder-dev/intro-video/internal/template"
@@ -9,8 +10,21 @@ import (
 )
 
 func Configuration(c echo.Context) error {
-	component := template.Configuration()
 
+	uuid := c.Param("uuid")
+
+	if uuid == "" {
+		fmt.Println("uuid is empty")
+	} else {
+		fmt.Println("uuid is:", uuid)
+	}
+
+	component := template.Configuration()
+	return component.Render(context.Background(), c.Response().Writer)
+}
+
+func IntroVideoCode(c echo.Context) error {
+	component := template.IntroVideoCode()
 	return component.Render(context.Background(), c.Response().Writer)
 }
 
