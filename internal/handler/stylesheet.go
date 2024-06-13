@@ -6,19 +6,21 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Stylesheet(c echo.Context) error {
+func Stylesheet(c echo.Context) (error, string) {
+	url := c.Get("url").(string)
 
 	stylesheet := internal.Stylesheet{}
 
 	stylesheetProps := internal.ProcessableFileProps{
+		URL:    url,
 		Cta:    config.Cta{Enabled: true, TextContent: "Test"},
 		Bubble: config.Bubble{Enabled: true, TextContent: "Test"},
 	}
 
 	style, err := stylesheet.Process(stylesheetProps)
 	if err != nil {
-		return err
+		return err, ""
 	}
 
-	return c.Blob(200, "text/css; charset=utf-8", []byte(style))
+	return nil, style
 }
