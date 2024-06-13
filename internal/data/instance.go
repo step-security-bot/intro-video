@@ -55,25 +55,35 @@ func NewStore() (Store, error) {
 	return Store{DatabaseUrl: url, DriverName: "libsql"}, nil
 
 }
-
 func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
 	if err != nil {
 		return Instance{}, err
 	}
+	defer db.Close()
 
-	rows, err := db.Query(`
+	tx, err := db.Begin()
+	if err != nil {
+		return Instance{}, err
+	}
+
+	rows, err := tx.Query(`
 		SELECT
-			videos.id,
-			videos.weight,
-			videos.url,
-			videos.configuration_id
+		videos.id,
+		videos.weight,
+		videos.url,
+		videos.configuration_id
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
 		WHERE instances.uuid = ?;
 		`,
 		uuid,
 	)
+
+	if err != nil {
+		tx.Rollback()
+		return Instance{}, err
+	}
 	defer rows.Close()
 
 	instance := Instance{Uuid: uuid, Videos: map[int32]Video{}, Configurations: map[int32]Configuration{}}
@@ -87,21 +97,22 @@ func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 			&video.URL,
 			&video.ConfigurationId,
 		); err != nil {
+			tx.Rollback()
 			return Instance{}, err
 		}
 
 		instance.Videos[video.Id] = video
 	}
 
-	rows, err = db.Query(`
+	rows, err = tx.Query(`
 		SELECT DISTINCT
-			config.id,
-			config.bubble_enabled,
-			config.bubble_text_content,
-			config.bubble_type,
-			config.cta_enabled,
-			config.cta_text_content,
-			config.cta_type
+		config.id,
+		config.bubble_enabled,
+		config.bubble_text_content,
+		config.bubble_type,
+		config.cta_enabled,
+		config.cta_text_content,
+		config.cta_type
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
 		JOIN configurations as config ON videos.configuration_id = config.id
@@ -109,6 +120,10 @@ func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 		`,
 		uuid,
 	)
+	if err != nil {
+		tx.Rollback()
+		return Instance{}, err
+	}
 	defer rows.Close()
 
 	for rows.Next() {
@@ -126,17 +141,29 @@ func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 			&configuration.Cta.TextContent,
 			&configuration.Cta.Type,
 		); err != nil {
+			tx.Rollback()
 			return Instance{}, err
 		}
 		instance.Configurations[configuration.Id] = configuration
 	}
 
+	err = tx.Commit()
+	if err != nil {
+		return Instance{}, err
+	}
+
 	return instance, nil
 }
 
-// TODO: Queries should be in a transaction
 func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (Instance, error) {
 	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
+	if err != nil {
+		return Instance{}, err
+
+	}
+	defer db.Close()
+
+	tx, err := db.Begin()
 	if err != nil {
 		return Instance{}, err
 	}
@@ -145,21 +172,22 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 
 	binUUID, err := newUUID.MarshalBinary()
 
-	row := db.QueryRow(`
+	var instanceId int32
+
+	err = tx.QueryRow(`
 		INSERT INTO instances (uuid)
 		VALUES (?)
 		RETURNING id;
-	`, binUUID)
-
-	var instanceId = int32(0)
-
-	err = row.Scan(&instanceId)
+	`, binUUID).Scan(&instanceId)
 
 	if err != nil {
+		tx.Rollback()
 		return Instance{}, err
 	}
 
-	row = db.QueryRow(`
+	var configurationId int32
+
+	err = tx.QueryRow(`
 		INSERT INTO configurations
 		(
 			bubble_enabled,
@@ -178,17 +206,16 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 		configuration.Cta.Enabled,
 		configuration.Cta.TextContent,
 		configuration.Cta.Type,
-	)
-
-	var configurationId = int32(0)
-
-	err = row.Scan(&configurationId)
+	).Scan(&configurationId)
 
 	if err != nil {
+		tx.Rollback()
 		return Instance{}, err
 	}
 
-	row = db.QueryRow(`
+	var videoId int32
+
+	err = tx.QueryRow(`
 		INSERT INTO videos
 		(
 			weight,
@@ -203,11 +230,12 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 		video.URL,
 		configurationId,
 		instanceId,
-	)
+	).Scan(&videoId)
 
-	var videoId = int32(0)
-
-	row.Scan(&videoId)
+	err = tx.Commit()
+	if err != nil {
+		return Instance{}, err
+	}
 
 	instance := Instance{
 		Id:             instanceId,
