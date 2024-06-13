@@ -32,16 +32,20 @@ func GenerateCode(c echo.Context) error {
 	url := c.FormValue("url")
 	bubbleEnabled := c.FormValue("bubble-enabled")
 	bubbleTextContent := c.FormValue("bubble-text")
+	bubbleType := c.FormValue("bubble-type")
 	ctaEnabled := c.FormValue("cta-enabled")
 	ctaTextContent := c.FormValue("cta-text")
+	ctaType := c.FormValue("cta-tzpe")
 	if url == "" {
 		return c.String(http.StatusBadRequest, "Invalid data")
 	}
 	c.Set("url", url)
 	c.Set("bubbleEnabled", bubbleEnabled)
 	c.Set("bubbleTextContent", bubbleTextContent)
+	c.Set("bubbleType", bubbleType)
 	c.Set("ctaEnabled", ctaEnabled)
 	c.Set("ctaTextContent", ctaTextContent)
+	c.Set("ctaType", ctaType)
 
 	// err, js := Script(c)
 	// if err != nil {
