@@ -70,6 +70,7 @@ class VideoInput extends LitElement {
       display: block
     }
   `;
+  static formAssociated = true;
 
   static properties = {
     id: { type: String },
@@ -82,6 +83,7 @@ class VideoInput extends LitElement {
     this.state = states.initial;
     this.id = 'video-url';
     this.name = 'video-url';
+    this.internals = this.attachInternals();
   }
 
   handleInput() {
@@ -98,7 +100,10 @@ class VideoInput extends LitElement {
           this.state = states.error;
         }
         this.requestUpdate();
+      } else {
+        this.state = states.error
       }
+      this.internals.setFormValue(value)
     }, 500);
   }
 
