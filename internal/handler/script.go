@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Script(c echo.Context) (error, string) {
+func Script(c echo.Context) (string, error) {
 	url := c.Get("url").(string)
 
 	script := internal.Script{}
@@ -19,8 +19,8 @@ func Script(c echo.Context) (error, string) {
 
 	s, err := script.Process(scriptProps)
 	if err != nil {
-		return err, ""
+		return "", err
 	}
 
-	return nil, s
+	return s, nil
 }

@@ -25,14 +25,14 @@ func GenerateCode(c echo.Context) error {
 	}
 	c.Set("url", url)
 
-	scriptErr, js := Script(c)
-	if scriptErr != nil {
-		return scriptErr
+	js, err := Script(c)
+	if err != nil {
+		return err
 	}
 
-	stylesheetErr, css := Stylesheet(c)
-	if stylesheetErr != nil {
-		return stylesheetErr
+	css, err := Stylesheet(c)
+	if err != nil {
+		return err
 	}
 
 	components := template.CodeTextareas(css, js)

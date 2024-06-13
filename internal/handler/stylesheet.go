@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Stylesheet(c echo.Context) (error, string) {
+func Stylesheet(c echo.Context) (string, error) {
 	url := c.Get("url").(string)
 
 	stylesheet := internal.Stylesheet{}
@@ -19,8 +19,8 @@ func Stylesheet(c echo.Context) (error, string) {
 
 	style, err := stylesheet.Process(stylesheetProps)
 	if err != nil {
-		return err, ""
+		return "", err
 	}
 
-	return nil, style
+	return style, nil
 }
