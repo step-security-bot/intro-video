@@ -163,16 +163,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
-input[type="checkbox"]:checked {
-  border: none;
-  outline: 2px solid deeppink;
-}
-
 input[type="checkbox"]:checked+label>div {
   @apply bg-indigo-600;
 }
-
 
 input[type="checkbox"]:checked+label>div>span {
   @apply translate-x-5;

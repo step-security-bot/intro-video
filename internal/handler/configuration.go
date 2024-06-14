@@ -37,9 +37,23 @@ func Configuration(c echo.Context) error {
 
 func IntroVideoCode(c echo.Context) error {
 	url := c.FormValue(template.URL)
-	bubbleEnabled, err := strconv.ParseBool(c.FormValue(template.BUBBLE_ENABLED))
-	if err != nil {
-		return err
+
+	bubbleEnabledRaw := c.FormValue(template.BUBBLE_ENABLED)
+
+	fmt.Println("bubbleEnabledRaw:", bubbleEnabledRaw)
+
+	if bubbleEnabledRaw == "" {
+		fmt.Println("bubbleEnabledRaw is empty")
+	}
+
+	var err error
+	var bubbleEnabled bool
+
+	if bubbleEnabledRaw != "" {
+		bubbleEnabled, err = strconv.ParseBool(bubbleEnabledRaw)
+		if err != nil {
+			return err
+		}
 	}
 
 	var bubbleTextContent string
@@ -53,9 +67,15 @@ func IntroVideoCode(c echo.Context) error {
 		}
 	}
 
-	ctaEnabled, err := strconv.ParseBool(c.FormValue(template.CTA_ENABLED))
-	if err != nil {
-		return err
+	ctaEnabledRaw := c.FormValue(template.CTA_ENABLED)
+
+	var ctaEnabled bool
+
+	if ctaEnabledRaw != "" {
+		ctaEnabled, err = strconv.ParseBool(ctaEnabledRaw)
+		if err != nil {
+			return err
+		}
 	}
 
 	var ctaTextContent string
