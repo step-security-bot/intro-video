@@ -110,19 +110,21 @@ class VideoInput extends LitElement {
 
   render() {
     return html`
-      <div class="mt-2 flex items-center gap-2">
+      <div class="relative mt-2 flex items-center gap-2">
         <input
           id="${this.id}"
           name="${this.name}"
           type="url"
           pattern="https://.*"
-          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          class="block w-full rounded-md border-0 py-1.5 pr-9 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           required
           @input="${this.handleInput}"
         />
-      ${this.state === states.loading ? loaderSVG : ''}
-      ${this.state === states.valid ? validSVG : ''}
-      ${this.state === states.error ? errorSVG : ''}
+        <div class="absolute right-2">
+          ${this.state === states.loading ? loaderSVG : ''}
+          ${this.state === states.valid ? validSVG : ''}
+          ${this.state === states.error ? errorSVG : ''}
+        </div>
       </div>
     `;
   }
