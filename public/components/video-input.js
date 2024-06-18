@@ -89,6 +89,10 @@ class VideoInput extends LitElement {
     return this.state === states.valid;
   }
 
+  getValue() {
+    return this.shadowRoot.getElementById(this.id).value;
+  }
+
   handleInput(e) {
     this.value = e.target.value;
     clearTimeout(this.timeout);
