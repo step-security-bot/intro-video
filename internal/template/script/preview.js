@@ -1,5 +1,5 @@
 export default {
   setupIntroVideo: () => setupIntroVideo({ bubble, cta }),
-  preload: () => preload(videoConfig.url),
+  preload: (callback) => preload(videoConfig.url, callback),
 }
 

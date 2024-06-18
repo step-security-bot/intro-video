@@ -12,10 +12,7 @@
       <div id="intro-video"></div>
       <script type="module">
         import script from '/demo/script.js';
-        script.preload();
-        setTimeout(() => {
-        script.setupIntroVideo();
-        }, 1000);
+        script.preload(() => script.setupIntroVideo());
         /*import setup from '/demo/script.js';
         setup();*/
     </script>

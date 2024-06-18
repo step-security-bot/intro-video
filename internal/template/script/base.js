@@ -48,7 +48,7 @@ var video = null;
 * @param {string} videoUrl
 * @returns {void}
 */
-function preload(videoUrl) {
+function preload(videoUrl, callback) {
   video = document.createElement('video');
 
   video.addEventListener('loadeddata', () => {
@@ -58,6 +58,9 @@ function preload(videoUrl) {
 
     videoConfig.large.width = calculateWidth(480 * 270, ratio);
     videoConfig.large.height = videoConfig.large.width / ratio;
+    if (callback) {
+      callback();
+    }
   });
 
   video.classList.add('iv-player');
