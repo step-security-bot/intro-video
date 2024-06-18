@@ -1,3 +1,6 @@
 {{define "start"}}
 export default (config) => {
+  if (!config) {
+    config = {};
+  }
 {{end}}

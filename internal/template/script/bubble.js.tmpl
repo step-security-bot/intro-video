@@ -1,6 +1,15 @@
 {{define "bubble"}}
-const bubbleConfig = {
-  textContent: '{{.TextContent}}',
-  enabled: {{.Enabled}},
-}
+
+console.log('Bubble is enabled');
+
+{{if .Enabled}}
+const bubble = document.createElement('div');
+bubble.id = 'bubble-text';
+bubble.classList.add('iv-bubble');
+bubble.textContent = '{{.TextContent}}';
+{{else}}
+console.log('Bubble is disabled');
+const bubble = null;
+{{end}}
+
 {{end}}

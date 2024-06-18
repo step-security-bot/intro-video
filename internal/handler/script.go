@@ -11,8 +11,8 @@ func Script(c echo.Context) error {
 
 	scriptProps := internal.ProcessableFileProps{
 		URL:    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-		Cta:    config.Cta{Enabled: true, TextContent: "Test", Type: config.DefaultCta},
-		Bubble: config.Bubble{Enabled: true, TextContent: "Test", Type: config.DefaultBubble},
+		Cta:    config.Cta{Enabled: false, TextContent: "Test", Type: config.DefaultCta},
+		Bubble: config.Bubble{Enabled: false, TextContent: "Test", Type: config.DefaultBubble},
 	}
 
 	s, err := script.Process(scriptProps)

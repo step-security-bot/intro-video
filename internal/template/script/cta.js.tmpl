@@ -1,6 +1,11 @@
 {{define "cta"}}
-const ctaConfig = {
-  textContent: '{{.TextContent}}',
-  enabled: {{.Enabled}},
-}
+
+{{if .Enabled}}
+const cta = document.createElement('button');
+cta.classList.add('iv-cta-button');
+cta.textContent = '{{.TextContent}}';
+{{else}}
+let cta = null;
+{{end}}
+
 {{end}}

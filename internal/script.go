@@ -41,18 +41,14 @@ func (s Script) Process(props ProcessableFileProps) (string, error) {
 		return "", err
 	}
 
-	if props.Bubble.Enabled {
-		err = t.ExecuteTemplate(&buf, "bubble", props.Bubble)
-		if err != nil {
-			return "", err
-		}
+	err = t.ExecuteTemplate(&buf, "bubble", props.Bubble)
+	if err != nil {
+		return "", err
 	}
 
-	if props.Cta.Enabled {
-		err = t.ExecuteTemplate(&buf, "cta", props.Cta)
-		if err != nil {
-			return "", err
-		}
+	err = t.ExecuteTemplate(&buf, "cta", props.Cta)
+	if err != nil {
+		return "", err
 	}
 
 	err = t.ExecuteTemplate(&end, "end", nil)
@@ -71,9 +67,21 @@ func (s Script) Process(props ProcessableFileProps) (string, error) {
 		return "", err
 	}
 
+	file, err = os.Open("internal/template/script/run.js")
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	run, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+
 	var result bytes.Buffer
 	result.Write(buf.Bytes())
 	result.Write(base)
+	result.Write(run)
 	result.Write(end.Bytes())
 
 	m := minify.Default

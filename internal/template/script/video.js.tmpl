@@ -1,4 +1,14 @@
 {{define "video"}}
-const videoUrl = "{{.URL}}"
+config.video = {
+  url: "{{.URL}}",
+  small: {
+    width: 0,
+    height: 0,
+  },
+  large: {
+    width: 0,
+    height: 0,
+  },
+};
 {{end}}
 

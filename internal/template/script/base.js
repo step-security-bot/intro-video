@@ -1,37 +1,4 @@
 /**
-* @returns {void}
-*/
-function run() {
-
-  if (!videoUrl) {
-    console.error('No video URL provided');
-    return;
-  }
-
-  preload(videoUrl);
-
-  const initialScrollPosition = window.scrollY;
-
-  function handleScroll() {
-    let scrollPosition = window.scrollY;
-    if (Math.abs(initialScrollPosition - scrollPosition) > 100 && videoConfig.sheight > 0) {
-      setupIntroVideo();
-      window.removeEventListener('scroll', handleScroll);
-    }
-  }
-
-  window.addEventListener('scroll', handleScroll);
-
-}
-
-const videoConfig = {
-  sheight: 0,
-  swidth: 0,
-  lheight: 0,
-  lwidth: 0,
-}
-
-/**
 * @param {number} area
 * @param {number} aspectRatio
 * returns {number}
@@ -40,25 +7,55 @@ function calculateWidth(area, aspectRatio) {
   return Math.sqrt(area * aspectRatio);
 }
 
+function loadContainer() {
+  if (container) {
+    return container
+  }
+
+  let unableToFindContainer = false;
+
+  if (config.target !== null) {
+    try {
+      container = document.querySelector(config.target);
+      if (container === null) {
+        unableToFindContainer = true;
+      } else {
+        return container;
+      }
+    } catch (e) {
+      unableToFindContainer = true;
+    }
+  }
+
+  if (config.target === null || unableToFindContainer) {
+    const body = document.querySelector('body');
+    container = document.createElement('div');
+
+    body.appendChild(container);
+  }
+
+  return container;
+}
+
+var container = loadContainer();
+var video = null;
+
 /**
 * @param {string} videoUrl
 * @returns {void}
 */
 function preload(videoUrl) {
-  const container = document.querySelector('#intro-video');
-
-  const video = document.createElement('video');
+  video = document.createElement('video');
 
   video.addEventListener('loadeddata', () => {
     const ratio = video.videoWidth / video.videoHeight;
-    videoConfig.swidth = calculateWidth(284 * 160, ratio);
-    videoConfig.sheight = videoConfig.swidth / ratio;
+    config.video.small.width = calculateWidth(284 * 160, ratio);
+    config.video.small.height = config.video.small.width / ratio;
 
-    videoConfig.lwidth = calculateWidth(480 * 270, ratio);
-    videoConfig.lheight = videoConfig.lwidth / ratio;
+    config.video.large.width = calculateWidth(480 * 270, ratio);
+    config.video.large.height = config.video.large.width / ratio;
   });
 
-  video.id = 'intro-video-player';
   video.classList.add('iv-player');
 
   video.muted = true;
@@ -66,44 +63,23 @@ function preload(videoUrl) {
   video.draggable = false;
   video.src = videoUrl;
 
-
-
   container.appendChild(video);
 }
 
-function createBubble() {
-  const bubble = document.createElement('div');
-  bubble.id = 'bubble-text';
-  bubble.classList.add('iv-bubble');
-  bubble.textContent = bubbleConfig?.textContent ?? 'Hello!';
-  return bubble;
-}
 
-function createCta() {
-  const cta = document.createElement('button');
-  cta.classList.add('iv-cta-button');
-  cta.textContent = ctaConfig?.textContent ?? 'Message Me';
-  return cta;
-}
 
-function setupIntroVideo() {
-  const container = document.querySelector('#intro-video');
-
+/**
+* @param {HTMLDivElement} bubble
+* @param {HTMLDivElement} cta
+* @returns {void}
+*/
+function setupIntroVideo({ bubble, cta }) {
   const card = document.createElement('div');
   card.classList.add('iv-card');
 
-  card.style.width = videoConfig.swidth + 'px';
-  card.style.height = videoConfig.sheight + 'px';
+  card.style.width = `${config.video.small.width}px`;
+  card.style.height = `${config.video.small.height}px`;
 
-  let bubble = null;
-  if (bubbleConfig && bubbleConfig.enabled) {
-    bubble = createBubble();
-  }
-
-  let cta = null;
-  if (ctaConfig && ctaConfig.enabled) {
-    cta = createCta();
-  }
 
   const videoWrapper = document.createElement('div');
   videoWrapper.classList.add('iv-player-wrapper');
@@ -111,11 +87,9 @@ function setupIntroVideo() {
   /**
   * @type {HTMLVideoElement}
   */
-  const video = document.querySelector('#intro-video-player');
   video.style.display = 'block';
 
   const progressBar = document.createElement('progress');
-  progressBar.id = 'intro-video-progressbar';
   progressBar.classList.add('iv-progressbar');
   progressBar.value = 0;
   progressBar.max = 100;
@@ -136,12 +110,13 @@ function setupIntroVideo() {
     }, 500);
   }
 
-
   videoWrapper.onclick = () => {
-    card.style.height = videoConfig.lheight + 'px';
-    card.style.width = videoConfig.lwidth + 'px';
+    card.style.height = `${config.video.large.height}px`;
+    card.style.width = `${config.video.large.width}px`;
     video.muted = false;
-    videoWrapper.appendChild(cta);
+    if (cta) {
+      videoWrapper.appendChild(cta);
+    }
     if (bubble) {
       bubble.remove();
     }
@@ -151,7 +126,9 @@ function setupIntroVideo() {
   videoWrapper.appendChild(progressBar);
   card.appendChild(videoWrapper);
   card.appendChild(button);
-  card.appendChild(bubble);
+  if (bubble) {
+    card.appendChild(bubble);
+  }
   container.appendChild(card);
   video.play();
 }
