@@ -15,7 +15,7 @@ func Script(c echo.Context) error {
 		Bubble: config.Bubble{Enabled: false, TextContent: "Test", Type: config.DefaultBubble},
 	}
 
-	s, err := script.Process(scriptProps)
+	s, err := script.Process(scriptProps, true)
 	if err != nil {
 		return err
 	}

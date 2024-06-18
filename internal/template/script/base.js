@@ -1,3 +1,7 @@
+if (!config) {
+  var config = {};
+}
+
 /**
 * @param {number} area
 * @param {number} aspectRatio
@@ -49,11 +53,11 @@ function preload(videoUrl) {
 
   video.addEventListener('loadeddata', () => {
     const ratio = video.videoWidth / video.videoHeight;
-    config.video.small.width = calculateWidth(284 * 160, ratio);
-    config.video.small.height = config.video.small.width / ratio;
+    videoConfig.small.width = calculateWidth(284 * 160, ratio);
+    videoConfig.small.height = videoConfig.small.width / ratio;
 
-    config.video.large.width = calculateWidth(480 * 270, ratio);
-    config.video.large.height = config.video.large.width / ratio;
+    videoConfig.large.width = calculateWidth(480 * 270, ratio);
+    videoConfig.large.height = videoConfig.large.width / ratio;
   });
 
   video.classList.add('iv-player');
@@ -77,8 +81,8 @@ function setupIntroVideo({ bubble, cta }) {
   const card = document.createElement('div');
   card.classList.add('iv-card');
 
-  card.style.width = `${config.video.small.width}px`;
-  card.style.height = `${config.video.small.height}px`;
+  card.style.width = `${videoConfig.small.width}px`;
+  card.style.height = `${videoConfig.small.height}px`;
 
 
   const videoWrapper = document.createElement('div');
@@ -111,8 +115,8 @@ function setupIntroVideo({ bubble, cta }) {
   }
 
   videoWrapper.onclick = () => {
-    card.style.height = `${config.video.large.height}px`;
-    card.style.width = `${config.video.large.width}px`;
+    card.style.height = `${videoConfig.large.height}px`;
+    card.style.width = `${videoConfig.large.width}px`;
     video.muted = false;
     if (cta) {
       videoWrapper.appendChild(cta);

@@ -92,7 +92,6 @@ class VideoInput extends LitElement {
     this.requestUpdate();
     this.timeout = setTimeout(async () => {
       const value = this.shadowRoot.getElementById(this.id).value;
-      console.log('value', value);
       if (value !== '') {
         try {
           await validateVideoUrl(value);

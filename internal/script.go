@@ -12,7 +12,7 @@ import (
 
 type Script struct{}
 
-func (s Script) Process(props ProcessableFileProps) (string, error) {
+func (s Script) Process(props ProcessableFileProps, preview bool) (string, error) {
 	if props.URL == "" {
 		return "", errors.New("video URL is required")
 	}
@@ -31,9 +31,11 @@ func (s Script) Process(props ProcessableFileProps) (string, error) {
 	var buf bytes.Buffer
 	var end bytes.Buffer
 
-	err = t.ExecuteTemplate(&buf, "start", props.Bubble)
-	if err != nil {
-		return "", err
+	if !preview {
+		err = t.ExecuteTemplate(&buf, "start", props.Bubble)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	err = t.ExecuteTemplate(&buf, "video", props)
@@ -51,9 +53,11 @@ func (s Script) Process(props ProcessableFileProps) (string, error) {
 		return "", err
 	}
 
-	err = t.ExecuteTemplate(&end, "end", nil)
-	if err != nil {
-		return "", err
+	if !preview {
+		err = t.ExecuteTemplate(&end, "end", nil)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	file, err := os.Open("internal/template/script/base.js")
@@ -78,10 +82,26 @@ func (s Script) Process(props ProcessableFileProps) (string, error) {
 		return "", err
 	}
 
+	file, err = os.Open("internal/template/script/preview.js")
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	previewScript, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+
 	var result bytes.Buffer
 	result.Write(buf.Bytes())
 	result.Write(base)
-	result.Write(run)
+	if preview {
+		result.Write(previewScript)
+	}
+	if !preview {
+		result.Write(run)
+	}
 	result.Write(end.Bytes())
 
 	m := minify.Default

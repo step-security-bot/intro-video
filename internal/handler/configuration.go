@@ -103,7 +103,7 @@ func IntroVideoCode(c echo.Context) error {
 		},
 	}
 
-	js, err := internal.Script{}.Process(processableFileProps)
+	js, err := internal.Script{}.Process(processableFileProps, false)
 	if err != nil {
 		return err
 	}

@@ -11,8 +11,13 @@
       <div style="height:1500px;width:200px"></div>
       <div id="intro-video"></div>
       <script type="module">
-        import setup from '/demo/script.js';
-        setup();
+        import script from '/demo/script.js';
+        script.preload();
+        setTimeout(() => {
+        script.setupIntroVideo();
+        }, 1000);
+        /*import setup from '/demo/script.js';
+        setup();*/
     </script>
   </body>
 </html>
