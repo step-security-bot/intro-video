@@ -85,6 +85,10 @@ class VideoInput extends LitElement {
     this.name = 'video-url';
   }
 
+  isVideoUrlValid() {
+    return this.state === states.valid;
+  }
+
   handleInput(e) {
     this.value = e.target.value;
     clearTimeout(this.timeout);
