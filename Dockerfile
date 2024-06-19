@@ -34,7 +34,7 @@ RUN go build \
   -o web \
   ./cmd/web/main.go
 
-RUN useradd -u 1001 dxta
+RUN useradd -u 1001 crocoderdev
 
 
 FROM scratch
@@ -45,12 +45,12 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 COPY --from=build /etc/passwd /etc/passwd
 
-COPY --from=build /app/web /web
+COPY --from=build /app/api /api
 
-USER dxta
+USER crocoderdev
 
 EXPOSE 80
 
 EXPOSE 443
 
-CMD ["/web"]
+CMD ["/api"]
