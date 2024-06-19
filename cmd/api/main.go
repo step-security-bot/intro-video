@@ -31,5 +31,5 @@ func main() {
 		port = "8080"
 	}
 
-	e.Logger.Fatal(e.Start(port))
+	e.Logger.Fatal(e.Start(":" + port))
 }
