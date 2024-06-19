@@ -47,6 +47,14 @@ COPY --from=build /etc/passwd /etc/passwd
 
 COPY --from=build /app/api /api
 
+COPY --from=build /app/public /public
+
+COPY --from=build /app/internal/template/script /internal/template/script
+
+COPY --from=build /app/internal/template/stylesheet /internal/template/stylesheet
+
+COPY --from=build /app/internal/template/demo.html /internal/template/demo.html
+
 USER crocoderdev
 
 EXPOSE 80
