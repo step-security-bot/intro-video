@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/crocoder-dev/intro-video/internal/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -23,5 +25,11 @@ func main() {
 
 	e.Static("/", "public")
 
-	e.Logger.Fatal(e.Start(":8080"))
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+	e.Logger.Fatal(e.Start(port))
 }
