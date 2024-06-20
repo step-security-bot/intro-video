@@ -26,7 +26,7 @@ templ Toggle(id string, name string, text string) {
 }
 
 templ IntroVideoForm(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
-	<form id="introVideoForm">
+	<form id="introVideoForm" hx-post="/v/new" hx-trigger="change from:input delay:500ms" hx-swap="innerHTML" hx-target="#intro-video-code">
 		<label for={ URL } class="block text-sm font-medium leading-6 text-gray-900">Video URL</label>
 		<video-input id={ URL } name={ URL }></video-input>
 		<div class="py-8 mt-8 border-y border-slate-300">
@@ -67,12 +67,10 @@ templ IntroVideoForm(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
 				</select>
 			</div>
 		</div>
-		// <div class="flex justify-end">
-		// 	<input type="submit" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" value="Submit"/>
-		// </div>
 	</form>
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
+			const form = document.getElementById('introVideoForm');
 			const videoInput = document.getElementById('url');
 
 			const bubbleEnabledCheckbox = document.getElementById("bubble-enabled");
@@ -105,38 +103,13 @@ templ IntroVideoForm(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
 			toggleBubbleFields();
 			toggleCtaFields();
 
-			function sendFormData() {
+			form.addEventListener('htmx:beforeRequest', function(event) {
 				const isValid = videoInput.isVideoUrlValid();
 				if (!isValid) {
-					alert(`Video URL is is not valid`);
-					return;
+					alert('Video URL is not valid');
+					event.preventDefault();
 				}
-				const formData = new FormData(document.getElementById('introVideoForm'));
-				formData.set('url', videoInput.getValue());
-
-				fetch('/v/new', {
-					method: 'POST',
-					body: formData
-				})
-				.then(response => response.text())
-				.then(data => {
-					console.log('Success:', data);
-					const codeCont = document.getElementById('intro-video-code');
-					codeCont.innerHTML = data;
-				})
-				.catch(error => {
-					console.error('Error:', error);
-					// Handle error
-				});
-			}
-			
-			videoInput.addEventListener('input', sendFormData);
-			bubbleEnabledCheckbox.addEventListener('change', sendFormData);
-			bubbleTextInput.addEventListener('input', sendFormData);
-			bubbleTypeSelect.addEventListener('change', sendFormData);
-			ctaEnabledCheckbox.addEventListener('change', sendFormData);
-			ctaTextInput.addEventListener('input', sendFormData);
-			ctaTypeSelect.addEventListener('change', sendFormData);
+			});
 		});
 	</script>
 }
