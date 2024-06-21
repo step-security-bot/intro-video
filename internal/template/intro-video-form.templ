@@ -108,6 +108,28 @@ templ IntroVideoForm(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
 				if (!isValid) {
 					alert('Video URL is not valid');
 					event.preventDefault();
+				} else {
+					const formData = new FormData(form);
+					formData.set('url', videoInput.getValue());
+					const queryString = new URLSearchParams(formData).toString();
+
+					fetch(`/demo/style.css?${queryString}`, {
+						method: 'GET'
+					});
+					fetch(`/demo/script.js?${queryString}`, {
+						method: 'GET'
+					}).then((res) => {
+						if (res.ok) {
+							const scriptElement = document.createElement('script');
+							scriptElement.id = 'demo-script';
+							scriptElement.type = 'module';
+							scriptElement.textContent = `
+								import script from '/demo/script.js';
+								script.preload(() => script.setupIntroVideo());
+							`;
+							document.body.appendChild(scriptElement);
+						}
+					});
 				}
 			});
 		});
