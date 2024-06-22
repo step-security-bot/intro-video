@@ -12,7 +12,7 @@ const (
 
 templ Toggle(id string, name string, text string) {
 	<div class="flex items-center">
-		<input id={ id } type="checkbox" name={ name } value="true" class="hidden" checked />
+		<input id={ id } type="checkbox" name={ name } value="true" class="hidden" checked/>
 		<label for={ id }>
 			<div class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" role="switch" aria-checked="false">
 				<span class="sr-only">Use setting</span>
@@ -26,7 +26,7 @@ templ Toggle(id string, name string, text string) {
 }
 
 templ IntroVideoForm(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
-	<form id="introVideoForm" hx-post="/v/new" hx-trigger="change from:input delay:500ms" hx-swap="innerHTML" hx-target="#intro-video-code">
+	<form id="introVideoForm" hx-post="/v/new" hx-trigger="change throttle:300ms" hx-swap="innerHTML" hx-target="#intro-video-code">
 		<label for={ URL } class="block text-sm font-medium leading-6 text-gray-900">Video URL</label>
 		<video-input id={ URL } name={ URL }></video-input>
 		<div class="py-8 mt-8 border-y border-slate-300">
@@ -68,70 +68,4 @@ templ IntroVideoForm(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
 			</div>
 		</div>
 	</form>
-	<script>
-		document.addEventListener("DOMContentLoaded", function() {
-			const form = document.getElementById('introVideoForm');
-			const videoInput = document.getElementById('url');
-
-			const bubbleEnabledCheckbox = document.getElementById("bubble-enabled");
-			const bubbleSection = document.getElementById("bubble-section");
-			const bubbleTextInput = document.getElementById("bubble-text");
-			const bubbleTypeSelect = document.getElementById("bubble-type");
-
-			const ctaEnabledCheckbox = document.getElementById("cta-enabled");
-			const ctaSection = document.getElementById("cta-section");
-			const ctaTextInput = document.getElementById("cta-text");
-			const ctaTypeSelect = document.getElementById("cta-type");
-
-			function toggleBubbleFields() {
-				const isEnabled = bubbleEnabledCheckbox.checked;
-				bubbleSection.style.display = isEnabled ? 'block' : 'none';
-				bubbleTextInput.disabled = !isEnabled;
-				bubbleTypeSelect.disabled = !isEnabled;
-			}
-
-			function toggleCtaFields() {
-				const isEnabled = ctaEnabledCheckbox.checked;
-				ctaSection.style.display = isEnabled ? 'block' : 'none';
-				ctaTextInput.disabled = !isEnabled;
-				ctaTypeSelect.disabled = !isEnabled;
-			}
-
-			bubbleEnabledCheckbox.addEventListener("change", toggleBubbleFields);
-			ctaEnabledCheckbox.addEventListener("change", toggleCtaFields);
-
-			toggleBubbleFields();
-			toggleCtaFields();
-
-			form.addEventListener('htmx:beforeRequest', function(event) {
-				const isValid = videoInput.isVideoUrlValid();
-				if (!isValid) {
-					alert('Video URL is not valid');
-					event.preventDefault();
-				} else {
-					const formData = new FormData(form);
-					formData.set('url', videoInput.getValue());
-					const queryString = new URLSearchParams(formData).toString();
-
-					fetch(`/demo/style.css?${queryString}`, {
-						method: 'GET'
-					});
-					fetch(`/demo/script.js?${queryString}`, {
-						method: 'GET'
-					}).then((res) => {
-						if (res.ok) {
-							const scriptElement = document.createElement('script');
-							scriptElement.id = 'demo-script';
-							scriptElement.type = 'module';
-							scriptElement.textContent = `
-								import script from '/demo/script.js';
-								script.preload(() => script.setupIntroVideo());
-							`;
-							document.body.appendChild(scriptElement);
-						}
-					});
-				}
-			});
-		});
-	</script>
 }

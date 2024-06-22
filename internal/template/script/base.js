@@ -11,6 +11,12 @@ function calculateWidth(area, aspectRatio) {
   return Math.sqrt(area * aspectRatio);
 }
 
+function cleanUp() {
+  if (container) {
+    container.remove();
+  }
+}
+
 function loadContainer() {
   if (container) {
     return container
@@ -41,7 +47,7 @@ function loadContainer() {
   return container;
 }
 
-var container = loadContainer();
+var container = null;
 var video = null;
 
 /**
@@ -49,6 +55,7 @@ var video = null;
 * @returns {void}
 */
 function preload(videoUrl, callback) {
+  container = loadContainer();
   video = document.createElement('video');
 
   video.addEventListener('loadeddata', () => {
@@ -72,8 +79,6 @@ function preload(videoUrl, callback) {
 
   container.appendChild(video);
 }
-
-
 
 /**
 * @param {HTMLDivElement} bubble
@@ -107,13 +112,15 @@ function setupIntroVideo({ bubble, cta }) {
 
   video.addEventListener('timeupdate', function() {
     const percentage = (video.currentTime / video.duration) * 100;
-    progressBar.value = percentage;
+    if (progressBar) {
+      progressBar.value = percentage;
+    }
   });
 
   button.onclick = () => {
     card.style.opacity = 0;
     setTimeout(() => {
-      card.remove();
+      cleanUp();
     }, 500);
   }
 

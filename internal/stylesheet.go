@@ -11,7 +11,7 @@ import (
 
 type Stylesheet struct{}
 
-func (s Stylesheet) Process(props ProcessableFileProps) (string, error) {
+func (s Stylesheet) Process(props ProcessableFileProps, opts ProcessableFileOpts) (string, error) {
 
 	t, err := template.ParseFiles(
 		"internal/template/stylesheet/bubble.css.tmpl",

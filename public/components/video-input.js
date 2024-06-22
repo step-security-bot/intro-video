@@ -75,6 +75,7 @@ class VideoInput extends LitElement {
   static properties = {
     id: { type: String },
     name: { type: String },
+    state: { type: String },
   }
 
 
@@ -89,13 +90,9 @@ class VideoInput extends LitElement {
     return this.state === states.valid;
   }
 
-  getValue() {
-    return this.shadowRoot.getElementById(this.id).value;
-  }
-
   handleInput(e) {
-    this.value = e.target.value;
     clearTimeout(this.timeout);
+    this.value = e.target.value;
     this.state = states.loading;
     this.requestUpdate();
     this.timeout = setTimeout(async () => {
@@ -104,8 +101,15 @@ class VideoInput extends LitElement {
         try {
           await validateVideoUrl(value);
           this.state = states.valid;
+          const changeEvent = new Event('change', {
+            bubbles: true,
+            composed: true,
+          });
+          this.dispatchEvent(changeEvent);
         } catch (error) {
           this.state = states.error;
+        } finally {
+          this.value = '';
         }
         this.requestUpdate();
       } else {

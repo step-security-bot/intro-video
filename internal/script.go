@@ -12,7 +12,7 @@ import (
 
 type Script struct{}
 
-func (s Script) Process(props ProcessableFileProps, preview bool) (string, error) {
+func (s Script) Process(props ProcessableFileProps, opts ProcessableFileOpts) (string, error) {
 	if props.URL == "" {
 		return "", errors.New("video URL is required")
 	}
@@ -31,7 +31,7 @@ func (s Script) Process(props ProcessableFileProps, preview bool) (string, error
 	var buf bytes.Buffer
 	var end bytes.Buffer
 
-	if !preview {
+	if !opts.Preview {
 		err = t.ExecuteTemplate(&buf, "start", props.Bubble)
 		if err != nil {
 			return "", err
@@ -53,7 +53,7 @@ func (s Script) Process(props ProcessableFileProps, preview bool) (string, error
 		return "", err
 	}
 
-	if !preview {
+	if !opts.Preview {
 		err = t.ExecuteTemplate(&end, "end", nil)
 		if err != nil {
 			return "", err
@@ -96,10 +96,10 @@ func (s Script) Process(props ProcessableFileProps, preview bool) (string, error
 	var result bytes.Buffer
 	result.Write(buf.Bytes())
 	result.Write(base)
-	if preview {
+	if opts.Preview {
 		result.Write(previewScript)
 	}
-	if !preview {
+	if !opts.Preview {
 		result.Write(run)
 	}
 	result.Write(end.Bytes())

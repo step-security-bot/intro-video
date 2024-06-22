@@ -8,6 +8,10 @@ type ProcessableFileProps struct {
 	URL string
 }
 
+type ProcessableFileOpts struct {
+	Preview bool
+}
+
 type ProcessableFile interface {
-	Process(props ProcessableFileProps) (string, error)
+	Process(props ProcessableFileProps, opts ProcessableFileOpts) (string, error)
 }

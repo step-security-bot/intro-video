@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/crocoder-dev/intro-video/internal"
 	"github.com/crocoder-dev/intro-video/internal/config"
@@ -36,24 +35,29 @@ func Configuration(c echo.Context) error {
 }
 
 func IntroVideoCode(c echo.Context) error {
+	fmt.Println(
+		"url", c.FormValue(template.URL), "\n",
+		"bubbleEnabled", c.FormValue(template.BUBBLE_ENABLED), "\n",
+		"bubbleText", c.FormValue(template.BUBBLE_TEXT), "\n",
+		"bubbleType", c.FormValue(template.BUBBLE_TYPE), "\n",
+		"ctaEnabled", c.FormValue(template.CTA_ENABLED), "\n",
+		"ctaText", c.FormValue(template.CTA_TEXT), "\n",
+		"ctaType", c.FormValue(template.CTA_TYPE),
+	)
+
+
+
 	url := c.FormValue(template.URL)
 
 	bubbleEnabledRaw := c.FormValue(template.BUBBLE_ENABLED)
 
-	fmt.Println("bubbleEnabledRaw:", bubbleEnabledRaw)
+	var bubbleEnabled bool
+	var err error
 
 	if bubbleEnabledRaw == "" {
-		fmt.Println("bubbleEnabledRaw is empty")
-	}
-
-	var err error
-	var bubbleEnabled bool
-
-	if bubbleEnabledRaw != "" {
-		bubbleEnabled, err = strconv.ParseBool(bubbleEnabledRaw)
-		if err != nil {
-			return err
-		}
+		bubbleEnabled = false
+	} else if bubbleEnabledRaw == "true" {
+		bubbleEnabled = true
 	}
 
 	var bubbleTextContent string
@@ -67,15 +71,14 @@ func IntroVideoCode(c echo.Context) error {
 		}
 	}
 
-	ctaEnabledRaw := c.FormValue(template.CTA_ENABLED)
-
 	var ctaEnabled bool
 
-	if ctaEnabledRaw != "" {
-		ctaEnabled, err = strconv.ParseBool(ctaEnabledRaw)
-		if err != nil {
-			return err
-		}
+	ctaEnabledRaw := c.FormValue(template.CTA_ENABLED)
+
+	if ctaEnabledRaw == "" {
+		ctaEnabled = false
+	} else if ctaEnabledRaw == "true" {
+		ctaEnabled = true
 	}
 
 	var ctaTextContent string
@@ -103,12 +106,16 @@ func IntroVideoCode(c echo.Context) error {
 		},
 	}
 
-	js, err := internal.Script{}.Process(processableFileProps, false)
+	_, err = internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true})
+
+	_, err = internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true })
+
+	js, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{})
 	if err != nil {
 		return err
 	}
 
-	css, err := internal.Stylesheet{}.Process(processableFileProps)
+	css, err := internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{})
 	if err != nil {
 		return err
 	}
