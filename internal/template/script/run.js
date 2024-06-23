@@ -3,18 +3,18 @@
 */
 function run() {
 
-  if (!config.video.url) {
+  if (!videoConfig.url) {
     console.error('No video URL provided');
     return;
   }
 
-  preload(config.video.url);
+  preload(videoConfig.url);
 
   const initialScrollPosition = window.scrollY;
 
   function handleScroll() {
     let scrollPosition = window.scrollY;
-    if (Math.abs(initialScrollPosition - scrollPosition) > 100 && config.video.small.height > 0) {
+    if (Math.abs(initialScrollPosition - scrollPosition) > 100 && videoConfig.small.height > 0) {
       setupIntroVideo({ bubble, cta });
       window.removeEventListener('scroll', handleScroll);
     }

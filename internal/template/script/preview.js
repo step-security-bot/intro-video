@@ -1,6 +1,3 @@
-export default {
-  setupIntroVideo: () => setupIntroVideo({ bubble, cta }),
-  preload: (callback) => preload(videoConfig.url, callback),
-  cleanUp: cleanUp,
-}
-
+const sIV = () => setupIntroVideo({ bubble, cta });
+const p = (callback) => preload(videoConfig.url, callback);
+const cU = cleanUp;

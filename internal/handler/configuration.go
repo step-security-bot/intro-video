@@ -106,9 +106,11 @@ func IntroVideoCode(c echo.Context) error {
 		},
 	}
 
-	_, err = internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true})
+	previewScript, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true})
+	previewScript = "<script>" + previewScript + "</script>"
 
-	_, err = internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true })
+	previewStyle, err := internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true })
+	previewStyle = "<style>" + previewStyle + "</style>"
 
 	js, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{})
 	if err != nil {
@@ -120,6 +122,6 @@ func IntroVideoCode(c echo.Context) error {
 		return err
 	}
 
-	component := template.IntroVideoCode(js, css)
+	component := template.IntroVideoPreview(js, css, previewScript, previewStyle)
 	return component.Render(context.Background(), c.Response().Writer)
 }

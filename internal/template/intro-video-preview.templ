@@ -1,0 +1,11 @@
+package template
+
+templ IntroVideoPreview(js string, css string, previewScript string, previewStyle string) {
+	@templ.Raw(previewStyle)
+	@templ.Raw(previewScript)
+	<script>
+	p(() => sIV());
+	</script>
+	<code>{ js }</code>
+	<code>{ css }</code>
+}
