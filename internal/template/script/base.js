@@ -1,3 +1,6 @@
+var container = null;
+var video = null;
+
 if (!config) {
   var config = {};
 }
@@ -47,14 +50,12 @@ function loadContainer() {
   return container;
 }
 
-var container = null;
-var video = null;
 
 /**
 * @param {string} videoUrl
 * @returns {void}
 */
-function preload(videoUrl, callback) {
+function preload(videoConfig, callback) {
   container = loadContainer();
   video = document.createElement('video');
 
@@ -75,7 +76,7 @@ function preload(videoUrl, callback) {
   video.muted = true;
   video.loop = true;
   video.draggable = false;
-  video.src = videoUrl;
+  video.src = videoConfig.url;
 
   container.appendChild(video);
 }
@@ -85,7 +86,7 @@ function preload(videoUrl, callback) {
 * @param {HTMLDivElement} cta
 * @returns {void}
 */
-function setupIntroVideo({ bubble, cta }) {
+function setupIntroVideo({videoConfig, bubble, cta }) {
   const card = document.createElement('div');
   card.classList.add('iv-card');
 

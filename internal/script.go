@@ -60,15 +60,19 @@ func (s Script) Process(props ProcessableFileProps, opts ProcessableFileOpts) (s
 		}
 	}
 
-	file, err := os.Open("internal/template/script/base.js")
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
+	var file *os.File
+	var base []byte
 
-	base, err := io.ReadAll(file)
-	if err != nil {
-		return "", err
+	if !opts.Preview {
+		file, err := os.Open("internal/template/script/base.js")
+		if err != nil {
+			return "", err
+		}
+		defer file.Close()
+		base, err = io.ReadAll(file)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	file, err = os.Open("internal/template/script/run.js")
@@ -104,10 +108,16 @@ func (s Script) Process(props ProcessableFileProps, opts ProcessableFileOpts) (s
 	}
 	result.Write(end.Bytes())
 
-	m := minify.Default
-	out, err := m.String("text/javascript", result.String())
-	if err != nil {
-		return "", err
+	var out string
+
+	if opts.Minify {
+		m := minify.Default
+		out, err = m.String("text/javascript", result.String())
+		if err != nil {
+			return "", err
+		}
+	} else {
+		out = result.String()
 	}
 
 	return out, nil

@@ -1,13 +1,18 @@
 {{define "bubble"}}
 
+function getBubble() {
 
-{{if .Enabled}}
-const bubble = document.createElement('div');
-bubble.id = 'bubble-text';
-bubble.classList.add('iv-bubble');
-bubble.textContent = '{{.TextContent}}';
-{{else}}
-const bubble = null;
-{{end}}
+
+  {{if .Enabled}}
+  const bubble = document.createElement('div');
+  bubble.id = 'bubble-text';
+  bubble.classList.add('iv-bubble');
+  bubble.textContent = '{{.TextContent}}';
+  {{else}}
+  const bubble = null;
+  {{end}}
+
+  return bubble;
+}
 
 {{end}}

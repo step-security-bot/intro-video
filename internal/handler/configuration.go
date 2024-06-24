@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"os"
 
 	"github.com/crocoder-dev/intro-video/internal"
 	"github.com/crocoder-dev/intro-video/internal/config"
@@ -30,7 +33,21 @@ func Configuration(c echo.Context) error {
 		{Caption: "Custom CTA", Value: config.CustomCta, Selected: false},
 	}
 
-	component := template.Configuration(bubleOptions, ctaOptions)
+	file, err := os.Open("internal/template/script/base.js")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	base, err := io.ReadAll(file)
+
+
+	var result bytes.Buffer
+	result.Write(base)
+
+	basePreviewJs := "<script>" + result.String() + "</script>";
+
+	component := template.Configuration(bubleOptions, ctaOptions, basePreviewJs)
 	return component.Render(context.Background(), c.Response().Writer)
 }
 

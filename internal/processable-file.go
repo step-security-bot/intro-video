@@ -10,6 +10,7 @@ type ProcessableFileProps struct {
 
 type ProcessableFileOpts struct {
 	Preview bool
+	Minify bool
 }
 
 type ProcessableFile interface {

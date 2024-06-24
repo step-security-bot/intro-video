@@ -13,14 +13,13 @@ type CtaOption struct {
 	Selected bool
 }
 
-templ Configuration(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
+templ Configuration(bubbleOptions []BubbleOption, ctaOptions []CtaOption, basePreviewJs string) {
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<title>Intro Video</title>
 			<link href="/style.css" rel="stylesheet"/>
-			<link id="dynamic-css" rel="stylesheet" href=""/>
 			<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 			<script type="module" src="/components/video-input.js"></script>
 		</head>
@@ -51,7 +50,7 @@ templ Configuration(bubbleOptions []BubbleOption, ctaOptions []CtaOption) {
 						</div>
 						<div class="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
 							<!-- Main area -->
-							@IntroVideoForm(bubbleOptions, ctaOptions)
+							@IntroVideoForm(bubbleOptions, ctaOptions, basePreviewJs)
 						</div>
 					</div>
 					<div class="shrink-0 border-t border-gray-200 px-4 py-6 sm:px-6 lg:w-96 lg:border-l lg:border-t-0 lg:pr-8 xl:pr-6">

@@ -1,14 +1,18 @@
 {{define "video"}}
-const videoConfig = {
-  url: "{{.URL}}",
-  small: {
-    width: 0,
-    height: 0,
-  },
-  large: {
-    width: 0,
-    height: 0,
-  },
-};
+function getVideoConfig() {
+  const videoConfig = {
+    url: "{{.URL}}",
+    small: {
+      width: 0,
+      height: 0,
+    },
+    large: {
+      width: 0,
+      height: 0,
+    },
+  };
+  return videoConfig;
+}
 {{end}}
+
 

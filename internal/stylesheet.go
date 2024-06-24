@@ -52,10 +52,16 @@ func (s Stylesheet) Process(props ProcessableFileProps, opts ProcessableFileOpts
 	result.Write(base)
 	result.Write(buf.Bytes())
 
-	m := minify.Default
-	out, err := m.String("text/css", result.String())
-	if err != nil {
-		return "", err
+	var out string
+
+	if opts.Minify {
+		m := minify.Default
+		out, err = m.String("text/css", result.String())
+		if err != nil {
+			return "", err
+		}
+	} else {
+		out = result.String()
 	}
 
 	return out, nil

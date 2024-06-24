@@ -1,11 +1,16 @@
 {{define "cta"}}
 
-{{if .Enabled}}
-const cta = document.createElement('button');
-cta.classList.add('iv-cta-button');
-cta.textContent = '{{.TextContent}}';
-{{else}}
-let cta = null;
-{{end}}
+function getCTA() {
+
+  {{if .Enabled}}
+  const cta = document.createElement('button');
+  cta.classList.add('iv-cta-button');
+  cta.textContent = '{{.TextContent}}';
+  {{else}}
+  const cta = null;
+  {{end}}
+
+  return cta;
+}
 
 {{end}}
