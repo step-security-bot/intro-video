@@ -16,5 +16,8 @@ function run() {
   });
 }
 
-return run;
+return {
+  run,
+  cleanup,
+}
 

@@ -19,6 +19,7 @@ func (s Script) Process(props ProcessableFileProps, opts ProcessableFileOpts) (s
 
 	t, err := template.ParseFiles(
 		"internal/template/script/start.js.tmpl",
+		"internal/template/script/start.preview.js.tmpl",
 		"internal/template/script/end.js.tmpl",
 		"internal/template/script/video.js.tmpl",
 		"internal/template/script/bubble.js.tmpl",
@@ -33,9 +34,12 @@ func (s Script) Process(props ProcessableFileProps, opts ProcessableFileOpts) (s
 
 	if !opts.Preview {
 		err = t.ExecuteTemplate(&buf, "start", props.Bubble)
-		if err != nil {
-			return "", err
-		}
+	} else {
+		err = t.ExecuteTemplate(&buf, "start-preview", nil)
+	}
+
+	if err != nil {
+		return "", err
 	}
 
 	err = t.ExecuteTemplate(&buf, "video", props)
