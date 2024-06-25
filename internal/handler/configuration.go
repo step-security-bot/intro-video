@@ -41,11 +41,10 @@ func Configuration(c echo.Context) error {
 
 	base, err := io.ReadAll(file)
 
-
 	var result bytes.Buffer
 	result.Write(base)
 
-	basePreviewJs := "<script>" + result.String() + "</script>";
+	basePreviewJs := "<script>" + result.String() + "</script>"
 
 	component := template.Configuration(bubleOptions, ctaOptions, basePreviewJs)
 	return component.Render(context.Background(), c.Response().Writer)
@@ -61,8 +60,6 @@ func IntroVideoCode(c echo.Context) error {
 		"ctaText", c.FormValue(template.CTA_TEXT), "\n",
 		"ctaType", c.FormValue(template.CTA_TYPE),
 	)
-
-
 
 	url := c.FormValue(template.URL)
 
@@ -123,18 +120,18 @@ func IntroVideoCode(c echo.Context) error {
 		},
 	}
 
-	previewScript, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true})
+	previewScript, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{Preview: true})
 	previewScript = "<script>" + previewScript + "</script>"
 
-	previewStyle, err := internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{ Preview: true })
+	previewStyle, err := internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{Preview: true})
 	previewStyle = "<style>" + previewStyle + "</style>"
 
-	js, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{})
+	js, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{Minify: true})
 	if err != nil {
 		return err
 	}
 
-	css, err := internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{})
+	css, err := internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{Minify: true})
 	if err != nil {
 		return err
 	}
