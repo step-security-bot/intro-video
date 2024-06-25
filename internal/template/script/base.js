@@ -60,6 +60,7 @@ function preload(videoConfig, callback) {
   video = document.createElement('video');
 
   video.addEventListener('loadeddata', () => {
+    console.log('loadeddata');
     const ratio = video.videoWidth / video.videoHeight;
     videoConfig.small.width = calculateWidth(284 * 160, ratio);
     videoConfig.small.height = videoConfig.small.width / ratio;
@@ -79,6 +80,7 @@ function preload(videoConfig, callback) {
   video.src = videoConfig.url;
 
   container.appendChild(video);
+  console.log('t', typeof container, typeof video);
 }
 
 /**
@@ -87,6 +89,7 @@ function preload(videoConfig, callback) {
 * @returns {void}
 */
 function setupIntroVideo({videoConfig, bubble, cta }) {
+  console.log('setupIntroVideo');
   const card = document.createElement('div');
   card.classList.add('iv-card');
 
@@ -145,5 +148,7 @@ function setupIntroVideo({videoConfig, bubble, cta }) {
     card.appendChild(bubble);
   }
   container.appendChild(card);
+  console.log('t', typeof container, typeof video);
+  console.log('video.play()');
   video.play();
 }

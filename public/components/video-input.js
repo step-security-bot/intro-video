@@ -109,8 +109,6 @@ class VideoInput extends LitElement {
         } catch (error) {
           this.state = states.error;
           this.value = '';
-        } finally {
-          this.value = '';
         }
         this.requestUpdate();
       } else {

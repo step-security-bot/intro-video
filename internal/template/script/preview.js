@@ -18,6 +18,6 @@ function run() {
 
 return {
   run,
-  cleanup,
+  cleanUp,
 }
 
