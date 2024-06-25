@@ -17,6 +17,8 @@ function calculateWidth(area, aspectRatio) {
 function cleanUp() {
   if (container) {
     container.remove();
+    container = null;
+    video = null;
   }
 }
 
