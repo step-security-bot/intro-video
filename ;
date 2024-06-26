@@ -44,7 +44,7 @@ func IntroVideoCode(c echo.Context) error {
 		"bubbleText", c.FormValue(template.BUBBLE_TEXT), "\n",
 		"theme", c.FormValue(template.THEME), "\n",
 		"ctaEnabled", c.FormValue(template.CTA_ENABLED), "\n",
-		"ctaText", c.FormValue(template.CTA_TEXT),
+		"ctaText", c.FormValue(template.CTA_TEXT), "\n",
 	)
 
 	url := c.FormValue(template.URL)
@@ -81,6 +81,7 @@ func IntroVideoCode(c echo.Context) error {
 	}
 
 	var ctaTextContent string
+	var ctaButtonType config.CtaButtonType
 
 	if ctaEnabled {
 		ctaTextContent = c.FormValue(template.CTA_TEXT)

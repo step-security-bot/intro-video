@@ -5,11 +5,6 @@ if (!config) {
   var config = {};
 }
 
-/**
-* @param {number} area
-* @param {number} aspectRatio
-* returns {number}
-*/
 function calculateWidth(area, aspectRatio) {
   return Math.sqrt(area * aspectRatio);
 }
@@ -52,11 +47,6 @@ function loadContainer() {
   return container;
 }
 
-
-/**
-* @param {string} videoUrl
-* @returns {void}
-*/
 function preload(videoConfig, callback) {
   container = loadContainer();
   video = document.createElement('video');
@@ -85,11 +75,6 @@ function preload(videoConfig, callback) {
   console.log('t', typeof container, typeof video);
 }
 
-/**
-* @param {HTMLDivElement} bubble
-* @param {HTMLDivElement} cta
-* @returns {void}
-*/
 function setupIntroVideo({videoConfig, bubble, cta }) {
   console.log('setupIntroVideo');
   const card = document.createElement('div');
@@ -102,9 +87,6 @@ function setupIntroVideo({videoConfig, bubble, cta }) {
   const videoWrapper = document.createElement('div');
   videoWrapper.classList.add('iv-player-wrapper');
 
-  /**
-  * @type {HTMLVideoElement}
-  */
   video.style.display = 'block';
 
   const progressBar = document.createElement('progress');

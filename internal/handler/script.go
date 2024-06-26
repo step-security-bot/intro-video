@@ -11,11 +11,12 @@ func Script(c echo.Context) error {
 
 	scriptProps := internal.ProcessableFileProps{
 		URL:    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-		Cta:    config.Cta{Enabled: true, TextContent: "Test", Type: config.DefaultCta},
-		Bubble: config.Bubble{Enabled: true, TextContent: "Test", Type: config.DefaultBubble},
+		Theme:  config.DefaultTheme,
+		Cta:    config.Cta{Enabled: true, TextContent: "Test"},
+		Bubble: config.Bubble{Enabled: true, TextContent: "Test"},
 	}
 
-	s, err := script.Process(scriptProps, internal.ProcessableFileOpts{ Preview: false })
+	s, err := script.Process(scriptProps, internal.ProcessableFileOpts{Preview: false})
 	if err != nil {
 		return err
 	}

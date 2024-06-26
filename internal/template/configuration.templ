@@ -2,18 +2,13 @@ package template
 
 import "github.com/crocoder-dev/intro-video/internal/config"
 
-type BubbleOption struct {
-	Caption  string
-	Value    config.BubbleType
-	Selected bool
-}
-type CtaOption struct {
-	Caption  string
-	Value    config.CtaButtonType
+type ThemeOption struct {
+	Caption string
+	Value config.Theme
 	Selected bool
 }
 
-templ Configuration(bubbleOptions []BubbleOption, ctaOptions []CtaOption, basePreviewJs string) {
+templ Configuration(themeOptions []ThemeOption, basePreviewJs string) {
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
@@ -50,7 +45,7 @@ templ Configuration(bubbleOptions []BubbleOption, ctaOptions []CtaOption, basePr
 						</div>
 						<div class="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
 							<!-- Main area -->
-							@IntroVideoForm(bubbleOptions, ctaOptions, basePreviewJs)
+							@IntroVideoForm(themeOptions, basePreviewJs)
 						</div>
 					</div>
 					<div class="shrink-0 border-t border-gray-200 px-4 py-6 sm:px-6 lg:w-96 lg:border-l lg:border-t-0 lg:pr-8 xl:pr-6">

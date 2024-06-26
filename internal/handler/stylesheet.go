@@ -11,11 +11,12 @@ func Stylesheet(c echo.Context) error {
 
 	stylesheetProps := internal.ProcessableFileProps{
 		URL:    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-		Cta:    config.Cta{Enabled: true, TextContent: "Test", Type: config.DefaultCta},
-		Bubble: config.Bubble{Enabled: true, TextContent: "Test", Type: config.DefaultBubble},
+		Theme:  config.DefaultTheme,
+		Cta:    config.Cta{Enabled: true, TextContent: "Test"},
+		Bubble: config.Bubble{Enabled: true, TextContent: "Test"},
 	}
 
-	style, err := stylesheet.Process(stylesheetProps, internal.ProcessableFileOpts{ Preview: false })
+	style, err := stylesheet.Process(stylesheetProps, internal.ProcessableFileOpts{Preview: false})
 	if err != nil {
 		return err
 	}

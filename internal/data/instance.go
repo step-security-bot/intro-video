@@ -30,12 +30,14 @@ type Video struct {
 }
 
 type NewConfiguration struct {
+	Theme  config.Theme
 	Bubble config.Bubble
 	Cta    config.Cta
 }
 
 type Configuration struct {
 	Id     int32
+	Theme  config.Theme
 	Bubble config.Bubble
 	Cta    config.Cta
 }
@@ -69,10 +71,10 @@ func (s *Store) LoadInstance(externalId []byte) (Instance, error) {
 
 	rows, err := tx.Query(`
 		SELECT
-		videos.id,
-		videos.weight,
-		videos.url,
-		videos.configuration_id
+			videos.id,
+			videos.weight,
+			videos.url,
+			videos.configuration_id
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
 		WHERE instances.external_id = ?;
@@ -106,13 +108,12 @@ func (s *Store) LoadInstance(externalId []byte) (Instance, error) {
 
 	rows, err = tx.Query(`
 		SELECT DISTINCT
-		config.id,
-		config.bubble_enabled,
-		config.bubble_text_content,
-		config.bubble_type,
-		config.cta_enabled,
-		config.cta_text_content,
-		config.cta_type
+			config.id,
+			config.theme,
+			config.bubble_enabled,
+			config.bubble_text_content,
+			config.cta_enabled,
+			config.cta_text_content
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
 		JOIN configurations as config ON videos.configuration_id = config.id
@@ -134,12 +135,11 @@ func (s *Store) LoadInstance(externalId []byte) (Instance, error) {
 
 		if err := rows.Scan(
 			&configuration.Id,
+			&configuration.Theme,
 			&configuration.Bubble.Enabled,
 			&configuration.Bubble.TextContent,
-			&configuration.Bubble.Type,
 			&configuration.Cta.Enabled,
 			&configuration.Cta.TextContent,
-			&configuration.Cta.Type,
 		); err != nil {
 			tx.Rollback()
 			return Instance{}, err
@@ -190,22 +190,20 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 	err = tx.QueryRow(`
 		INSERT INTO configurations
 		(
+			theme,
 			bubble_enabled,
 			bubble_text_content,
-			bubble_type,
 			cta_enabled,
-			cta_text_content,
-			cta_type
+			cta_text_content
 		)
-		VALUES (?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?)
 		RETURNING id;
 		`,
+		configuration.Theme,
 		configuration.Bubble.Enabled,
 		configuration.Bubble.TextContent,
-		configuration.Bubble.Type,
 		configuration.Cta.Enabled,
 		configuration.Cta.TextContent,
-		configuration.Cta.Type,
 	).Scan(&configurationId)
 
 	if err != nil {

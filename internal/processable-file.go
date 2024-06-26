@@ -3,6 +3,7 @@ package internal
 import "github.com/crocoder-dev/intro-video/internal/config"
 
 type ProcessableFileProps struct {
+	config.Theme
 	config.Bubble
 	config.Cta
 	URL string

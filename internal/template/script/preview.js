@@ -1,6 +1,3 @@
-/**
-* @returns {void}
-*/
 function run() {
   const videoConfig = getVideoConfig();
 

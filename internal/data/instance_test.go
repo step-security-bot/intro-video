@@ -83,15 +83,14 @@ func TestCreateInstance(t *testing.T) {
 
 	newVideo := data.NewVideo{Weight: 100, URL: "url"}
 	newConfiguration := data.NewConfiguration{
+		Theme: config.DefaultTheme,
 		Bubble: config.Bubble{
 			Enabled:     true,
 			TextContent: "bubble text",
-			Type:        config.DefaultBubble,
 		},
 		Cta: config.Cta{
 			Enabled:     true,
 			TextContent: "cta text",
-			Type:        config.DefaultCta,
 		},
 	}
 
@@ -196,8 +195,8 @@ func TestLoadInstance(t *testing.T) {
 	_, err = db.Exec(`
 		INSERT INTO instances (id, external_id) VALUES (1, ?);
 
-		INSERT INTO configurations (id, bubble_enabled, bubble_text_content, bubble_type, cta_enabled, cta_text_content, cta_type)
-		VALUES (1, 1, "bubble text", "default", 1, "cta text", "default");
+		INSERT INTO configurations (id, bubble_enabled, bubble_text_content, cta_enabled, cta_text_content, theme)
+		VALUES (1, 1, "bubble text", 1, "cta text", "default");
 
 		INSERT INTO videos (id, instance_id, configuration_id, weight, url)
 		VaLUES (1, 1, 1, 100, "url");
@@ -228,15 +227,14 @@ func TestLoadInstance(t *testing.T) {
 		Configurations: map[int32]data.Configuration{
 			1: {
 				Id: 1,
+				Theme: config.DefaultTheme,
 				Bubble: config.Bubble{
 					Enabled:     true,
 					TextContent: "bubble text",
-					Type:        "default",
 				},
 				Cta: config.Cta{
 					Enabled:     true,
 					TextContent: "cta text",
-					Type:        "default",
 				},
 			},
 		},
