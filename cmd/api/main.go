@@ -17,7 +17,7 @@ func main() {
 
 	e.GET("/demo/style.css", handler.Stylesheet)
 
-	e.GET("/v/:uuid", handler.Configuration)
+	e.GET("/v/:ulid", handler.Configuration)
 	e.GET("/v/new", handler.Configuration)
 	e.POST("/v/new", handler.IntroVideoCode)
 

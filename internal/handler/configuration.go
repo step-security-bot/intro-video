@@ -14,14 +14,7 @@ import (
 )
 
 func Configuration(c echo.Context) error {
-
-	uuid := c.Param("uuid")
-
-	if uuid == "" {
-		fmt.Println("uuid is empty")
-	} else {
-		fmt.Println("uuid is:", uuid)
-	}
+	_ = c.Param("ulid")
 
 	bubleOptions := []template.BubbleOption{
 		{Caption: "Default Bubble", Value: config.DefaultBubble, Selected: true},
