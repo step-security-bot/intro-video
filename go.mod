@@ -14,6 +14,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/oklog/ulid/v2 v2.1.0 // indirect
 	github.com/tdewolff/minify/v2 v2.20.20 // indirect
 	github.com/tdewolff/parse/v2 v2.7.13 // indirect
 	github.com/tursodatabase/libsql-client-go v0.0.0-20240416075003-747366ff79c4 // indirect

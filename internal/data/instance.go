@@ -5,14 +5,14 @@ import (
 	"os"
 
 	"github.com/crocoder-dev/intro-video/internal/config"
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
+	"github.com/oklog/ulid/v2"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 type Instance struct {
 	Id             int32
-	Uuid           []byte
+	ExternalId     []byte
 	Videos         map[int32]Video
 	Configurations map[int32]Configuration
 }
@@ -55,7 +55,7 @@ func NewStore() (Store, error) {
 	return Store{DatabaseUrl: url, DriverName: "libsql"}, nil
 
 }
-func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
+func (s *Store) LoadInstance(externalId []byte) (Instance, error) {
 	db, err := sql.Open(s.DriverName, s.DatabaseUrl)
 	if err != nil {
 		return Instance{}, err
@@ -75,9 +75,9 @@ func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 		videos.configuration_id
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
-		WHERE instances.uuid = ?;
+		WHERE instances.external_id = ?;
 		`,
-		uuid,
+		externalId,
 	)
 
 	if err != nil {
@@ -86,7 +86,7 @@ func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 	}
 	defer rows.Close()
 
-	instance := Instance{Uuid: uuid, Videos: map[int32]Video{}, Configurations: map[int32]Configuration{}}
+	instance := Instance{ExternalId: externalId, Videos: map[int32]Video{}, Configurations: map[int32]Configuration{}}
 
 	for rows.Next() {
 		var video Video
@@ -116,9 +116,9 @@ func (s *Store) LoadInstance(uuid []byte) (Instance, error) {
 		FROM instances
 		JOIN videos ON videos.instance_id = instances.id
 		JOIN configurations as config ON videos.configuration_id = config.id
-		WHERE instances.uuid = ?;
+		WHERE instances.external_id = ?;
 		`,
-		uuid,
+		externalId,
 	)
 	if err != nil {
 		tx.Rollback()
@@ -168,17 +168,17 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 		return Instance{}, err
 	}
 
-	newUUID := uuid.New()
+	newUlid := ulid.Make()
 
-	binUUID, err := newUUID.MarshalBinary()
+	binUlid := newUlid.Bytes()
 
 	var instanceId int32
 
 	err = tx.QueryRow(`
-		INSERT INTO instances (uuid)
+		INSERT INTO instances (external_id)
 		VALUES (?)
 		RETURNING id;
-	`, binUUID).Scan(&instanceId)
+	`, binUlid).Scan(&instanceId)
 
 	if err != nil {
 		tx.Rollback()
@@ -238,8 +238,7 @@ func (s *Store) CreateInstance(video NewVideo, configuration NewConfiguration) (
 	}
 
 	instance := Instance{
-		Id:             instanceId,
-		Uuid:           binUUID,
+		ExternalId:     binUlid,
 		Videos:         map[int32]Video{},
 		Configurations: map[int32]Configuration{},
 	}
