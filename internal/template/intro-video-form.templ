@@ -26,7 +26,7 @@ templ Toggle(id string, name string, text string) {
 
 templ IntroVideoForm(themeOptions []ThemeOption, basePreviewJs string) {
 	@templ.Raw(basePreviewJs)
-	<form id="introVideoForm" hx-post="/v/new" hx-trigger="change throttle:300ms" hx-swap="innerHTML" hx-target="#intro-video-code">
+	<form class="max-w-[700px] m-auto p-6" id="introVideoForm" hx-post="/v/new" hx-trigger="change throttle:300ms" hx-swap="innerHTML" hx-target="#intro-video-code">
 		<label for={ URL } class="block text-sm font-medium leading-6 text-gray-900">Video URL</label>
 		<video-input id={ URL } name={ URL }></video-input>
 		<label for={ THEME } class="mt-2 block text-sm font-medium leading-6 text-gray-900">Theme</label>

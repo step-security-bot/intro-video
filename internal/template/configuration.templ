@@ -37,23 +37,14 @@ templ Configuration(themeOptions []ThemeOption, basePreviewJs string) {
 						</div>
 					</div>
 				</header>
-				<div class="mx-auto w-full max-w-7xl grow lg:flex xl:px-2">
-					<!-- Left sidebar & main wrapper -->
-					<div class="flex-1 xl:flex">
-						<div class="border-b border-gray-200 px-4 py-6 sm:px-6 lg:pl-8 xl:w-64 xl:shrink-0 xl:border-b-0 xl:border-r xl:pl-6">
-							<!-- Left column area -->
-						</div>
-						<div class="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-							<!-- Main area -->
-							@IntroVideoForm(themeOptions, basePreviewJs)
-						</div>
+				<div class="mx-auto w-full max-w-7xl grow xl:px-2">
+					<div class="w-full border-b border-gray-200">
+						@IntroVideoForm(themeOptions, basePreviewJs)
 					</div>
-					<div class="shrink-0 border-t border-gray-200 px-4 py-6 sm:px-6 lg:w-96 lg:border-l lg:border-t-0 lg:pr-8 xl:pr-6">
-						<!-- Right column area -->
-						<div id="intro-video-code"></div>
-					</div>
+					@IntroVideoPreview("", "", "", "")
 				</div>
 			</div>
 		</body>
 	</html>
 }
+

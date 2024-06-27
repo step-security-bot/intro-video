@@ -1,13 +1,31 @@
 package template
 
 templ IntroVideoPreview(js string, css string, previewScript string, previewStyle string) {
-	@templ.Raw(previewStyle)
-	@templ.Raw(previewScript)
-	<code>{ js }</code>
-	<code>{ css }</code>
-	<script>
-		s = setup()
-		s.cleanUp();
-		s.run();
-	</script>
+	if (previewStyle != "") {
+		@templ.Raw(previewStyle)
+	} 
+	if (previewStyle != "") {
+		@templ.Raw(previewScript)
+	} 
+	<div id="intro-video-code" class="flex flex-col w-full max-w-7xl md:flex-row">
+		<div class="w-full p-4 md:w-1/2">
+			<div class="w-full p-4 min-h-64 bg-gray-100 rounded-md border border-gray-300 overflow-auto">
+				<div class="text-gray-500 mb-4 select-none text-md">Javascript preview</div>
+				<code>{ js }</code>
+			</div>
+		</div>
+		<div class="w-full p-4 md:w-1/2">
+			<div class="w-full p-4 min-h-64 bg-gray-100 rounded-md border border-gray-300 overflow-auto">
+				<div class="text-gray-500 mb-4 select-none text-md">CSS preview</div>
+				<code>{ css }</code>
+			</div>
+		</div>
+	</div>
+	if js != "" {
+		<script>
+			s = setup()
+			s.cleanUp();
+			s.run();
+		</script>
+	}
 }
