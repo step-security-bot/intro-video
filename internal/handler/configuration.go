@@ -30,6 +30,10 @@ func Configuration(c echo.Context) error {
 
 	base, err := io.ReadAll(file)
 
+	if err != nil {
+		return generateMessage(c, "Failed to read the base script file.", http.StatusInternalServerError)
+	}
+
 	var result bytes.Buffer
 	result.Write(base)
 
@@ -53,7 +57,7 @@ func IntroVideoCode(c echo.Context) error {
 
 	theme, err := config.NewTheme(c.FormValue(template.THEME))
 	if err != nil {
-		return generateMessage(c, "Error generating theme", http.StatusInternalServerError)
+		return generateMessage(c, "There was an issue generating the theme. Please check the theme value and try again.", http.StatusInternalServerError)
 	}
 
 	bubbleEnabledRaw := c.FormValue(template.BUBBLE_ENABLED)
@@ -109,12 +113,12 @@ func IntroVideoCode(c echo.Context) error {
 
 	js, err := internal.Script{}.Process(processableFileProps, internal.ProcessableFileOpts{Minify: true})
 	if err != nil {
-		return generateMessage(c, "Error generating script", http.StatusInternalServerError)
+		return generateMessage(c, "An error occurred while generating the script. Please try again later.", http.StatusInternalServerError)
 	}
 
 	css, err := internal.Stylesheet{}.Process(processableFileProps, internal.ProcessableFileOpts{Minify: true})
 	if err != nil {
-		return generateMessage(c, "Error generating style", http.StatusInternalServerError)
+		return generateMessage(c, "An error occurred while generating the stylesheet. Please try again later.", http.StatusInternalServerError)
 	}
 
 	component := template.IntroVideoPreview(js, css, previewScript, previewStyle)
