@@ -1,6 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
 
-import globalStyles from '/style.css' assert { type: 'css' };
+import globalStyles from '/style.css' with { type: 'css' };
 
 // green-500
 const validSVG = html`
